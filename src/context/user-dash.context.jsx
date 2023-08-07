@@ -19,7 +19,7 @@ export const UserDashContext = createContext({
 
 export const UserDashProvider = ({ children }) => {
   const [uid, setUid] = useState(userB.uid);
-  const [userName, setUserName] = useState(userB.user);
+  const [userName, setUserName] = useState(userB.displayName);
   const [notes, setNotes] = useState(userB.notes);
   const [listTypes, setListTypes] = useState(userB.listtypes);
   const [lists, setLists] = useState(userB.lists);

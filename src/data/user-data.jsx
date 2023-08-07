@@ -43,8 +43,9 @@ export const userA = {
 };
 
 export const userB = {
-  uid: '002',
-  user: 'Engela',
+  displayName: 'Engela',
+  email: 'lombard.engela@icloud.com',
+  createdAt: 'August',
   notes: 'Hello dear....',
   listtypes: [
     { typeId: 't001', typeName: 'Once-off (Action)' },
