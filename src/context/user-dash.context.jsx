@@ -17,14 +17,16 @@ export const UserDashContext = createContext({
   removeDoneItem: () => {},
 });
 
+const { d2dData } = userB;
+
 export const UserDashProvider = ({ children }) => {
   const [uid, setUid] = useState(userB.uid);
   const [userName, setUserName] = useState(userB.displayName);
-  const [notes, setNotes] = useState(userB.notes);
-  const [listTypes, setListTypes] = useState(userB.listtypes);
-  const [lists, setLists] = useState(userB.lists);
-  const [listItems, setListItems] = useState(userB.listitems);
-  const [listItemsDone, setListItemsDone] = useState(userB.listitemsdone);
+  const [notes, setNotes] = useState(d2dData.notes);
+  const [listTypes, setListTypes] = useState(d2dData.listtypes);
+  const [lists, setLists] = useState(d2dData.lists);
+  const [listItems, setListItems] = useState(d2dData.listitems);
+  const [listItemsDone, setListItemsDone] = useState(d2dData.listitemsdone);
 
   const handleNote = (event) => {
     setNotes(event.target.value);
