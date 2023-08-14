@@ -25,45 +25,49 @@ function D2d() {
   } = useContext(UserDashContext);
 
   // Map Types
-  const listTypeMap = listTypes.map((type) => {
-    //Lists Map
-    const listMap = lists.map((list) => {
-      const listItemArray = listItems.filter(
-        ({ listId, typeId }) => listId === list.listId && typeId === type.typeId
-      );
+  const listTypeMap =
+    listTypes &&
+    listTypes.map((type) => {
+      //Lists Map
+      const listMap = lists.map((list) => {
+        const listItemArray = listItems.filter(
+          ({ listId, typeId }) =>
+            listId === list.listId && typeId === type.typeId
+        );
 
-      const listObj = {
-        arr: listItemArray,
-        addToArray: addListItem, //Add Item
-        removeFromArray: removeListItem, //Delete
-        sendToDone: sendToDone, // Move Item from sub array to main array
-        addToArrayVis: true,
-        removeFromArrayVis: true,
-        sendToDoneVis: true,
-        dna: {
-          listId: list.listId,
-          typeId: type.typeId,
-        },
-      };
+        const listObj = {
+          arr: listItemArray,
+          addToArray: addListItem, //Add Item
+          removeFromArray: removeListItem, //Delete
+          sendToDone: sendToDone, // Move Item from sub array to main array
+          addToArrayVis: true,
+          removeFromArrayVis: true,
+          sendToDoneVis: true,
+          dna: {
+            listId: list.listId,
+            typeId: type.typeId,
+          },
+        };
+        return (
+          <div className="block">
+            <List listObject={listObj} listLabel={list.listName} />
+          </div>
+        );
+      });
+
       return (
-        <div className="block">
-          <List listObject={listObj} listLabel={list.listName} />
+        <div className="column is-half">
+          <div>
+            <h3>
+              <strong>{type.typeName}:</strong>
+            </h3>
+            {listMap}
+          </div>
         </div>
       );
     });
 
-    return (
-      <div className="column is-half">
-        <div>
-          <h3>
-            <strong>{type.typeName}:</strong>
-          </h3>
-          {listMap}
-        </div>
-      </div>
-    );
-  });
-
+  //userName ? alert('logged in') : alert('not logged in');
   //App return
   return (
     <div className="App">

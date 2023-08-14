@@ -1,7 +1,13 @@
-import { createContext, useState } from 'react';
+import { createContext, useState, useEffect } from 'react';
 import { nanoid } from 'nanoid';
-import { userB } from '../data/user-data';
 
+import {
+  creatUserDocumentFromAuth,
+  onAuthStateChangedListener,
+  getUserDoc,
+} from '../utils/firebase/firebase.utils';
+
+// CONTEXT
 export const UserDashContext = createContext({
   uid: '',
   userName: '',
@@ -15,18 +21,49 @@ export const UserDashContext = createContext({
   sendToDone: () => {},
   removeListItem: () => {},
   removeDoneItem: () => {},
+  updateUser: () => {},
+  clearUser: () => {},
 });
 
-const { d2dData } = userB;
-
 export const UserDashProvider = ({ children }) => {
-  const [uid, setUid] = useState(userB.uid);
-  const [userName, setUserName] = useState(userB.displayName);
-  const [notes, setNotes] = useState(d2dData.notes);
-  const [listTypes, setListTypes] = useState(d2dData.listtypes);
-  const [lists, setLists] = useState(d2dData.lists);
-  const [listItems, setListItems] = useState(d2dData.listitems);
-  const [listItemsDone, setListItemsDone] = useState(d2dData.listitemsdone);
+  const [uid, setUid] = useState();
+  const [userName, setUserName] = useState();
+  const [notes, setNotes] = useState();
+  const [listTypes, setListTypes] = useState();
+  const [lists, setLists] = useState();
+  const [listItems, setListItems] = useState();
+  const [listItemsDone, setListItemsDone] = useState();
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChangedListener(async (user) => {
+      if (user) {
+        await creatUserDocumentFromAuth(user);
+        updateUser(getUserDoc(user.uid));
+        setUid(user.uid);
+      } else clearUser();
+    });
+
+    return unsubscribe;
+  }, []);
+
+  const updateUser = async (userDoc) => {
+    const { d2dData, displayName } = await userDoc;
+    setUserName(displayName);
+    setNotes(d2dData.notes);
+    setListTypes(d2dData.listtypes);
+    setLists(d2dData.lists);
+    setListItems(d2dData.listitems);
+    setListItemsDone(d2dData.listitemsdone);
+  };
+
+  const clearUser = () => {
+    setUserName(null);
+    setNotes('');
+    setListTypes();
+    setLists();
+    setListItems();
+    setListItemsDone();
+  };
 
   const handleNote = (event) => {
     setNotes(event.target.value);
@@ -69,6 +106,8 @@ export const UserDashProvider = ({ children }) => {
     sendToDone,
     removeListItem,
     removeDoneItem,
+    updateUser,
+    clearUser,
   };
 
   return (
