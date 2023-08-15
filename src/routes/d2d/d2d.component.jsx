@@ -22,6 +22,7 @@ function D2d() {
     sendToDone,
     removeListItem,
     removeDoneItem,
+    sendNoteToFS,
   } = useContext(UserDashContext);
 
   // Map Types
@@ -67,7 +68,6 @@ function D2d() {
       );
     });
 
-  //userName ? alert('logged in') : alert('not logged in');
   //App return
   return (
     <div className="App">
@@ -78,6 +78,14 @@ function D2d() {
         <div className=" columns is-variable is-8 is-multiline">
           <div className="column is-half">
             <Notes />
+            <br />
+            <button
+              type="submit"
+              onClick={() => sendNoteToFS()}
+              className="button is-primary is-outlined is-fullwidth"
+            >
+              Save
+            </button>
           </div>
           {listTypeMap}
         </div>

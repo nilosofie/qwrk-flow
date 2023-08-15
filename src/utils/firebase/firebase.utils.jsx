@@ -8,7 +8,13 @@ import {
   onAuthStateChanged,
 } from 'firebase/auth';
 
-import { getFirestore, doc, getDoc, setDoc } from 'firebase/firestore';
+import {
+  getFirestore,
+  doc,
+  getDoc,
+  setDoc,
+  updateDoc,
+} from 'firebase/firestore';
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -136,3 +142,24 @@ export const signOutUser = async () => await signOut(auth);
 
 export const onAuthStateChangedListener = (callback) =>
   onAuthStateChanged(auth, callback);
+
+export const updateNote = async (uid, note) => {
+  if (uid) {
+    const userRef = doc(db, 'users', uid);
+    await updateDoc(userRef, { 'd2dData.notes': note });
+  }
+};
+
+export const updateListItems = async (uid, listItems) => {
+  if (uid) {
+    const userRef = doc(db, 'users', uid);
+    await updateDoc(userRef, { 'd2dData.listitems': listItems });
+  }
+};
+
+export const updateListItemsDone = async (uid, listItemsDone) => {
+  if (uid) {
+    const userRef = doc(db, 'users', uid);
+    await updateDoc(userRef, { 'd2dData.listitemsdone': listItemsDone });
+  }
+};

@@ -5,6 +5,9 @@ import {
   creatUserDocumentFromAuth,
   onAuthStateChangedListener,
   getUserDoc,
+  updateNote,
+  updateListItems,
+  updateListItemsDone,
 } from '../utils/firebase/firebase.utils';
 
 // CONTEXT
@@ -23,6 +26,7 @@ export const UserDashContext = createContext({
   removeDoneItem: () => {},
   updateUser: () => {},
   clearUser: () => {},
+  sendNoteToFS: () => {},
 });
 
 export const UserDashProvider = ({ children }) => {
@@ -57,6 +61,7 @@ export const UserDashProvider = ({ children }) => {
   };
 
   const clearUser = () => {
+    setUid(null);
     setUserName(null);
     setNotes('');
     setListTypes();
@@ -67,6 +72,10 @@ export const UserDashProvider = ({ children }) => {
 
   const handleNote = (event) => {
     setNotes(event.target.value);
+  };
+
+  const sendNoteToFS = () => {
+    alert(updateNote(uid, notes));
   };
 
   const addListItem = (item, { listId, typeId }) => {
@@ -85,6 +94,7 @@ export const UserDashProvider = ({ children }) => {
 
   const removeListItem = (id) => {
     setListItems((oldList) => oldList.filter((item) => item.listItemId !== id));
+    updateListItems(uid, listItems);
   };
 
   const removeDoneItem = (id) => {
@@ -92,6 +102,14 @@ export const UserDashProvider = ({ children }) => {
       oldList.filter((item) => item.listItemId !== id)
     );
   };
+
+  useEffect(() => {
+    if (uid) updateListItems(uid, listItems);
+  }, [listItems]);
+
+  useEffect(() => {
+    if (uid) updateListItemsDone(uid, listItemsDone);
+  }, [listItemsDone]);
 
   const value = {
     uid,
@@ -108,6 +126,7 @@ export const UserDashProvider = ({ children }) => {
     removeDoneItem,
     updateUser,
     clearUser,
+    sendNoteToFS,
   };
 
   return (
