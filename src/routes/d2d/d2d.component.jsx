@@ -23,6 +23,7 @@ function D2d() {
     removeListItem,
     removeDoneItem,
     sendNoteToFS,
+    noteStatus,
   } = useContext(UserDashContext);
 
   // Map Types
@@ -77,12 +78,15 @@ function D2d() {
       <div className="container">
         <div className=" columns is-variable is-8 is-multiline">
           <div className="column is-half">
+            <span>Notes:</span>
+            <span>{!noteStatus ? 'Saved' : 'Changes not saved'}</span>
             <Notes />
             <br />
             <button
               type="submit"
               onClick={() => sendNoteToFS()}
-              className="button is-primary is-outlined is-fullwidth"
+              className="button is-outlined is-fullwidth is-primary"
+              disabled={!noteStatus}
             >
               Save
             </button>

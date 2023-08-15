@@ -27,6 +27,7 @@ export const UserDashContext = createContext({
   updateUser: () => {},
   clearUser: () => {},
   sendNoteToFS: () => {},
+  noteStatus: false,
 });
 
 export const UserDashProvider = ({ children }) => {
@@ -37,6 +38,7 @@ export const UserDashProvider = ({ children }) => {
   const [lists, setLists] = useState();
   const [listItems, setListItems] = useState();
   const [listItemsDone, setListItemsDone] = useState();
+  const [noteStatus, setNoteStatus] = useState(false);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChangedListener(async (user) => {
@@ -72,10 +74,14 @@ export const UserDashProvider = ({ children }) => {
 
   const handleNote = (event) => {
     setNotes(event.target.value);
+
+    setNoteStatus(true);
   };
 
   const sendNoteToFS = () => {
-    alert(updateNote(uid, notes));
+    updateNote(uid, notes);
+
+    setNoteStatus(false);
   };
 
   const addListItem = (item, { listId, typeId }) => {
@@ -127,6 +133,7 @@ export const UserDashProvider = ({ children }) => {
     updateUser,
     clearUser,
     sendNoteToFS,
+    noteStatus,
   };
 
   return (
