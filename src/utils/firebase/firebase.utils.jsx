@@ -163,3 +163,10 @@ export const updateListItemsDone = async (uid, listItemsDone) => {
     await updateDoc(userRef, { 'd2dData.listitemsdone': listItemsDone });
   }
 };
+
+export const updateLists = async (uid, lists) => {
+  if (uid) {
+    const userRef = doc(db, 'users', uid);
+    await updateDoc(userRef, { 'd2dData.lists': lists });
+  }
+};

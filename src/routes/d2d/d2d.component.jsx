@@ -1,4 +1,4 @@
-import React, { useContext, useRef } from 'react';
+import React, { useContext, useState } from 'react';
 
 import 'bulma/css/bulma.min.css';
 
@@ -7,6 +7,8 @@ import '../../mystyles.scss';
 import Notes from '../../components/notes.component';
 
 import List from '../../components/list.component';
+import ManageLists from '../../components/manage-lists.component';
+import Popup from '../../components/popup.component';
 
 import { UserDashContext } from '../../context/user-dash.context';
 
@@ -24,11 +26,20 @@ function D2d() {
     removeDoneItem,
     sendNoteToFS,
     noteStatus,
+    addList,
+    removeList,
   } = useContext(UserDashContext);
+
+  const [manageListsPopupStatus, setManageListsPopupStatus] = useState(false);
+
+  const toggleManageListsPopupStatus = () => {
+    setManageListsPopupStatus((old) => !old);
+  };
 
   // Map Types
   const listTypeMap =
     listTypes &&
+    lists.length !== 0 &&
     listTypes.map((type) => {
       //Lists Map
       const listMap = lists.map((list) => {
@@ -69,6 +80,24 @@ function D2d() {
       );
     });
 
+  //list map to be moved
+  const listsMap = lists.map((list) => ({
+    listId: list.listId,
+    listName: list.listName,
+  }));
+
+  const manageListsObj = {
+    arr: listsMap,
+    addToArray: addList, //Add Item
+    removeFromArray: removeList, //Delete
+    addToArrayVis: true,
+    removeFromArrayVis: true,
+    sendToDoneVis: false,
+    dna: {
+      listId: '',
+      typeId: '',
+    },
+  };
   //App return
   return (
     <div className="App">
@@ -82,14 +111,36 @@ function D2d() {
             <span>{!noteStatus ? 'Saved' : 'Changes not saved'}</span>
             <Notes />
             <br />
-            <button
-              type="submit"
-              onClick={() => sendNoteToFS()}
-              className="button is-outlined is-fullwidth is-primary"
-              disabled={!noteStatus}
-            >
-              Save
-            </button>
+            <div className="container">
+              <button
+                type="button"
+                onClick={() => sendNoteToFS()}
+                className="button is-outlined is-fullwidth is-primary"
+                disabled={!noteStatus}
+              >
+                Save
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  toggleManageListsPopupStatus();
+                }}
+                className="button is-outlined is-fullwidth is-info"
+              >
+                Manage Lists
+              </button>
+              <Popup
+                trigger={manageListsPopupStatus}
+                closePopup={() => {
+                  toggleManageListsPopupStatus();
+                }}
+              >
+                <ManageLists
+                  listObject={manageListsObj}
+                  listLabel="Hello friend"
+                />
+              </Popup>
+            </div>
           </div>
           {listTypeMap}
         </div>
