@@ -8,11 +8,11 @@ function Notes() {
     <div>
       <textarea
         name="notes-text"
-        className="textarea"
+        className="textarea "
         placeholder="..."
         value={notes}
         onChange={handleNote}
-        rows="10"
+        rows="25"
       />
     </div>
   );

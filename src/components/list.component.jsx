@@ -74,9 +74,11 @@ const List = ({ listObject, listLabel = 'label1' }) => {
 
   return (
     <div className="box block container">
-      <div className=" is-fullwidth">
-        <strong className="subtitle">{listLabel}</strong>
-      </div>
+      <section className="hero is-dark is-fullwidth is-small">
+        <div className="hero-body">
+          <p className="subtitle">{listLabel}</p>
+        </div>
+      </section>
       <div className="container block is-fullwidth">
         <ul ref={parentRef} className="block">
           {mainArr.length !== 0 ? mainArr : <em>No Items to Show</em>}

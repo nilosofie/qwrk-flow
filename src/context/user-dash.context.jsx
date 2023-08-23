@@ -9,6 +9,7 @@ import {
   updateListItems,
   updateListItemsDone,
   updateLists,
+  realTimeUserListener,
 } from '../utils/firebase/firebase.utils';
 
 // CONTEXT
@@ -44,7 +45,7 @@ export const UserDashProvider = ({ children }) => {
   const [noteStatus, setNoteStatus] = useState(false);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChangedListener(async (user) => {
+    const unsubscribeUser = onAuthStateChangedListener(async (user) => {
       if (user) {
         await creatUserDocumentFromAuth(user);
         updateUser(getUserDoc(user.uid));
@@ -52,8 +53,23 @@ export const UserDashProvider = ({ children }) => {
       } else clearUser();
     });
 
-    return unsubscribe;
+    return unsubscribeUser;
   }, []);
+
+  useEffect(() => {
+    if (uid) {
+      const unsubscribeRT = realTimeUserListener(async (snapshot) => {
+        if (snapshot) {
+          console.log(snapshot.data().d2dData);
+          setListItems(snapshot.data().d2dData.listitems);
+          setLists(snapshot.data().d2dData.lists);
+          setListItemsDone(snapshot.data().d2dData.listitemsdone);
+        } else clearUser();
+      }, uid);
+
+      return unsubscribeRT;
+    }
+  }, [uid]);
 
   const updateUser = async (userDoc) => {
     const { d2dData, displayName } = await userDoc;
@@ -88,50 +104,49 @@ export const UserDashProvider = ({ children }) => {
   };
 
   const addListItem = (item, { listId, typeId }) => {
-    setListItems((oldList) => [
-      ...oldList,
+    const listItemsToSend = [
+      ...listItems,
       { listItemId: nanoid(), listId: listId, typeId: typeId, item: item },
-    ]);
+    ];
+    updateListItems(uid, listItemsToSend);
   };
 
   const addList = (item) => {
-    setLists((oldLists) => [...oldLists, { listName: item, listId: nanoid() }]);
+    const listsToSend = [...lists, { listName: item, listId: nanoid() }];
+    updateLists(uid, listsToSend);
   };
 
   const sendToDone = (id) => {
     const doneObj = listItems.filter((item) => item.listItemId === id);
-    console.log(doneObj);
-    setListItemsDone((oldList) => [...oldList, doneObj[0]]);
+    const listItemsDoneToSend = [...listItemsDone, doneObj[0]];
+    updateListItemsDone(uid, listItemsDoneToSend);
     removeListItem(id);
   };
 
   const removeListItem = (id) => {
-    setListItems((oldList) => oldList.filter((item) => item.listItemId !== id));
-    updateListItems(uid, listItems);
+    const listItemsToSend = listItems.filter((item) => item.listItemId !== id);
+    updateListItems(uid, listItemsToSend);
   };
 
   const removeDoneItem = (id) => {
-    setListItemsDone((oldList) =>
-      oldList.filter((item) => item.listItemId !== id)
+    const listItemsDoneToSend = listItemsDone.filter(
+      (item) => item.listItemId !== id
     );
+
+    updateListItemsDone(uid, listItemsDoneToSend);
   };
 
   const removeList = (id) => {
-    setListItems((oldList) => oldList.filter((item) => item.listId !== id));
-    setLists((oldList) => oldList.filter((item) => item.listId !== id));
+    const listItemsToSend = listItems.filter((item) => item.listId !== id);
+    updateListItems(uid, listItemsToSend);
+
+    const listsToSend = lists.filter((item) => item.listId !== id);
+    updateLists(uid, listsToSend);
   };
 
-  useEffect(() => {
-    if (uid) updateListItems(uid, listItems);
-  }, [listItems]);
-
-  useEffect(() => {
-    if (uid) updateListItemsDone(uid, listItemsDone);
-  }, [listItemsDone]);
-
-  useEffect(() => {
-    if (uid) updateLists(uid, lists);
-  }, [lists]);
+  // useEffect(() => {
+  //   if (uid) updateListItemsDone(uid, listItemsDone);
+  // }, [listItemsDone]);
 
   const value = {
     uid,

@@ -1,4 +1,4 @@
-import { Fragment, useState, useContext } from 'react';
+import { useState, useContext } from 'react';
 
 import { Outlet, Link } from 'react-router-dom';
 
@@ -54,7 +54,6 @@ const Navigation = () => {
           </div>
         </div>
       </nav>
-      <br />
       <Outlet />
     </div>
   ) : (

@@ -9,6 +9,7 @@ import Notes from '../../components/notes.component';
 import List from '../../components/list.component';
 import ManageLists from '../../components/manage-lists.component';
 import Popup from '../../components/popup.component';
+import TitleSection from '../../components/tile-section.component';
 
 import { UserDashContext } from '../../context/user-dash.context';
 
@@ -70,12 +71,7 @@ function D2d() {
 
       return (
         <div className="column is-half">
-          <div>
-            <h3>
-              <strong>{type.typeName}:</strong>
-            </h3>
-            {listMap}
-          </div>
+          <TitleSection title={type.typeName}>{listMap}</TitleSection>
         </div>
       );
     });
@@ -100,17 +96,25 @@ function D2d() {
   };
   //App return
   return (
-    <div className="App">
-      <div className="container hero block">
-        <h2 className="subtitle">{`Hello, ${userName}`}</h2>
+    <div className="App hero is-primary is-fullheight">
+      <br />
+      <div className="container hero-head block">
+        <p className="title">{`Hello, ${userName}`}</p>
       </div>
       <div className="container">
         <div className=" columns is-variable is-8 is-multiline">
           <div className="column is-half">
-            <span>Notes:</span>
-            <span>{!noteStatus ? 'Saved' : 'Changes not saved'}</span>
-            <Notes />
-            <br />
+            <TitleSection title={'Notes'}>
+              <Notes />
+              <button
+                type="button"
+                onClick={() => sendNoteToFS()}
+                className="button is-fullwidth is-info"
+                disabled={!noteStatus}
+              >
+                {!noteStatus ? 'Saved' : 'Changes not saved'}
+              </button>
+            </TitleSection>
             <div className="container">
               <button
                 type="button"
@@ -125,7 +129,7 @@ function D2d() {
                 onClick={() => {
                   toggleManageListsPopupStatus();
                 }}
-                className="button is-outlined is-fullwidth is-info"
+                className="button is-fullwidth is-info"
               >
                 Manage Lists
               </button>
@@ -137,7 +141,7 @@ function D2d() {
               >
                 <ManageLists
                   listObject={manageListsObj}
-                  listLabel="Hello friend"
+                  listLabel="Manage Lists"
                 />
               </Popup>
             </div>
