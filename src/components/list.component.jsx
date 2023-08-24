@@ -74,7 +74,7 @@ const List = ({ listObject, listLabel = 'label1' }) => {
 
   return (
     <div className="box block container">
-      <section className="hero is-dark is-fullwidth is-small">
+      <section className="hero is-info is-fullwidth is-small">
         <div className="hero-body">
           <p className="subtitle">{listLabel}</p>
         </div>

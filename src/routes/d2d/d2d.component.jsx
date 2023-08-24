@@ -106,6 +106,7 @@ function D2d() {
           <div className="column is-half">
             <TitleSection title={'Notes'}>
               <Notes />
+              <br />
               <button
                 type="button"
                 onClick={() => sendNoteToFS()}
@@ -116,14 +117,6 @@ function D2d() {
               </button>
             </TitleSection>
             <div className="container">
-              <button
-                type="button"
-                onClick={() => sendNoteToFS()}
-                className="button is-outlined is-fullwidth is-primary"
-                disabled={!noteStatus}
-              >
-                Save
-              </button>
               <button
                 type="button"
                 onClick={() => {

@@ -38,6 +38,13 @@ const Navigation = () => {
         </div>
         <div className={`navbar-menu ${navBurgerStatus && 'is-active'}`}>
           <div className="navbar-end">
+            <Link
+              to="/d2d"
+              className="navbar-item"
+              onClick={() => setNavBurgerStatus(false)}
+            >
+              <h1>D2D</h1>
+            </Link>
             {userName ? (
               <Link type className="navbar-item" onClick={signOutUser}>
                 Sign Out
