@@ -1,17 +1,13 @@
-import { useContext } from 'react';
+import React from 'react';
 
-import { UserDashContext } from '../../context/user-dash.context';
+//import { UserDashContext } from '../../context/user-dash.context';
 
 import MainLogo from '../../assets/Qwrk Embleem Pakkie sb 130423 v1.png';
 
-import {
-  signInWithGooglePopup,
-  getUserDoc,
-  creatUserDocumentFromAuth,
-} from '../../utils/firebase/firebase.utils';
+import { signInWithGooglePopup } from '../../utils/firebase/firebase.utils';
 
 const SignIn = () => {
-  const { updateUser } = useContext(UserDashContext);
+  //const { updateUser } = useContext(UserDashContext);
 
   const signInWithGoogle = async (event) => {
     event.preventDefault();

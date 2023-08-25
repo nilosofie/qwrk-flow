@@ -1,19 +1,20 @@
 import { createContext, useState, useEffect } from 'react';
 import { nanoid } from 'nanoid';
 
+import { onAuthStateChangedListener } from '../utils/firebase/firebase.utils';
+
 import {
   creatUserDocumentFromAuth,
-  onAuthStateChangedListener,
   getUserDoc,
   updateNote,
   updateListItems,
   updateListItemsDone,
   updateLists,
   realTimeUserListener,
-} from '../utils/firebase/firebase.utils';
+} from '../utils/firebase/firestore-users.utils';
 
 // CONTEXT
-export const UserDashContext = createContext({
+export const UsersContext = createContext({
   uid: '',
   userName: '',
   notes: '',
@@ -34,7 +35,7 @@ export const UserDashContext = createContext({
   removeList: () => {},
 });
 
-export const UserDashProvider = ({ children }) => {
+export const UsersProvider = ({ children }) => {
   const [uid, setUid] = useState();
   const [userName, setUserName] = useState();
   const [notes, setNotes] = useState();
@@ -60,7 +61,6 @@ export const UserDashProvider = ({ children }) => {
     if (uid) {
       const unsubscribeRT = realTimeUserListener(async (snapshot) => {
         if (snapshot) {
-          console.log(snapshot.data().d2dData);
           setListItems(snapshot.data().d2dData.listitems);
           setLists(snapshot.data().d2dData.lists);
           setListItemsDone(snapshot.data().d2dData.listitemsdone);
@@ -170,8 +170,6 @@ export const UserDashProvider = ({ children }) => {
   };
 
   return (
-    <UserDashContext.Provider value={value}>
-      {children}
-    </UserDashContext.Provider>
+    <UsersContext.Provider value={value}>{children}</UsersContext.Provider>
   );
 };

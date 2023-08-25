@@ -1,9 +1,9 @@
 import React, { useContext } from 'react';
 
-import { UserDashContext } from '../context/user-dash.context';
+import { UsersContext } from '../context/users.context';
 
 function Notes() {
-  const { notes, handleNote } = useContext(UserDashContext);
+  const { notes, handleNote } = useContext(UsersContext);
   return (
     <div>
       <textarea

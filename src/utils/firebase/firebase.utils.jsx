@@ -8,15 +8,6 @@ import {
   onAuthStateChanged,
 } from 'firebase/auth';
 
-import {
-  getFirestore,
-  doc,
-  getDoc,
-  setDoc,
-  updateDoc,
-  onSnapshot,
-} from 'firebase/firestore';
-
 // Your web app's Firebase configuration
 const firebaseConfig = {
   apiKey: 'AIzaSyCLKGxWy-3v4ny8KMDOE2gvjn_H8CxWZr8',
@@ -40,81 +31,87 @@ export const auth = getAuth();
 
 export const signInWithGooglePopup = () => signInWithPopup(auth, provider);
 
-export const db = getFirestore();
+// export const db = getFirestore(); //users
 
-export const creatUserDocumentFromAuth = async (userAuth) => {
-  const userDocRef = doc(db, 'users', userAuth.uid);
+//users
+// export const creatUserDocumentFromAuth = async (userAuth) => {
+//   const userDocRef = doc(db, 'users', userAuth.uid);
 
-  const userSnapshot = await getDoc(userDocRef);
+//   const userSnapshot = await getDoc(userDocRef);
 
-  if (!userSnapshot.exists()) {
-    const { displayName, email } = userAuth;
-    const createdAt = new Date();
+//   if (!userSnapshot.exists()) {
+//     const { displayName, email } = userAuth;
+//     const createdAt = new Date();
 
-    try {
-      await setDoc(userDocRef, {
-        displayName,
-        email,
-        createdAt,
-        d2dData: {
-          notes: '',
-          listtypes: [
-            { typeId: 't001', typeName: 'Once-off (Action)' },
-            { typeId: 't002', typeName: 'Follow-Up' },
-            { typeId: 't003', typeName: 'Recurring' },
-          ],
-          lists: [],
-          listitems: [],
-          listitemsdone: [],
-        },
-      });
-    } catch (error) {
-      console.log('error creating the user', error.message);
-    }
-  }
+//     try {
+//       await setDoc(userDocRef, {
+//         displayName,
+//         email,
+//         createdAt,
+//         d2dData: {
+//           notes: '',
+//           listtypes: [
+//             { typeId: 't001', typeName: 'Once-off (Action)' },
+//             { typeId: 't002', typeName: 'Follow-Up' },
+//             { typeId: 't003', typeName: 'Recurring' },
+//           ],
+//           lists: [],
+//           listitems: [],
+//           listitemsdone: [],
+//         },
+//       });
+//     } catch (error) {
+//       console.log('error creating the user', error.message);
+//     }
+//   }
 
-  return userDocRef;
-};
+//   return userDocRef;
+// };
 
-export const getUserDoc = async (uid) => {
-  const userDocRef = await doc(db, 'users', uid);
-  const userDoc = await getDoc(userDocRef);
-  return userDoc.data();
-};
+//users
+// export const getUserDoc = async (uid) => {
+//   const userDocRef = await doc(db, 'users', uid);
+//   const userDoc = await getDoc(userDocRef);
+//   return userDoc.data();
+// };
 
 export const signOutUser = async () => await signOut(auth);
 
 export const onAuthStateChangedListener = (callback) =>
   onAuthStateChanged(auth, callback);
 
-export const realTimeUserListener = (callback, uid) =>
-  onSnapshot(doc(db, 'users', uid), callback);
-//const userDocRef = await doc(db, 'users', uid);
+//users
+// export const realTimeUserListener = (callback, uid) =>
+//   onSnapshot(doc(db, 'users', uid), callback);
 
-export const updateNote = async (uid, note) => {
-  if (uid) {
-    const userRef = doc(db, 'users', uid);
-    await updateDoc(userRef, { 'd2dData.notes': note });
-  }
-};
+//user
+// export const updateNote = async (uid, note) => {
+//   if (uid) {
+//     const userRef = doc(db, 'users', uid);
+//     await updateDoc(userRef, { 'd2dData.notes': note });
+//   }
+// };
 
-export const updateListItems = async (uid, listItems) => {
-  if (uid) {
-    const userRef = doc(db, 'users', uid);
-    await updateDoc(userRef, { 'd2dData.listitems': listItems });
-  }
-};
+//users
+// export const updateListItems = async (uid, listItems) => {
+//   if (uid) {
+//     const userRef = doc(db, 'users', uid);
+//     await updateDoc(userRef, { 'd2dData.listitems': listItems });
+//   }
+// };
 
-export const updateListItemsDone = async (uid, listItemsDone) => {
-  if (uid) {
-    const userRef = doc(db, 'users', uid);
-    await updateDoc(userRef, { 'd2dData.listitemsdone': listItemsDone });
-  }
-};
+//users
+// export const updateListItemsDone = async (uid, listItemsDone) => {
+//   if (uid) {
+//     const userRef = doc(db, 'users', uid);
+//     await updateDoc(userRef, { 'd2dData.listitemsdone': listItemsDone });
+//   }
+// };
 
-export const updateLists = async (uid, lists) => {
-  if (uid) {
-    const userRef = doc(db, 'users', uid);
-    await updateDoc(userRef, { 'd2dData.lists': lists });
-  }
-};
+//users
+// export const updateLists = async (uid, lists) => {
+//   if (uid) {
+//     const userRef = doc(db, 'users', uid);
+//     await updateDoc(userRef, { 'd2dData.lists': lists });
+//   }
+// };

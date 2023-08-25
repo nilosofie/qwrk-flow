@@ -2,7 +2,7 @@ import { useState, useContext } from 'react';
 
 import { Outlet, Link } from 'react-router-dom';
 
-import { UserDashContext } from '../../context/user-dash.context';
+import { UsersContext } from '../../context/users.context';
 import { signOutUser } from '../../utils/firebase/firebase.utils';
 
 import SignIn from '../sign-in/sign-in.component';
@@ -11,7 +11,7 @@ import MainLogo from '../../assets/Qwrk Embleem Pakkie sb 130423 v1.png';
 
 const Navigation = () => {
   const [navBurgerStatus, setNavBurgerStatus] = useState(false);
-  const { userName } = useContext(UserDashContext);
+  const { userName } = useContext(UsersContext);
 
   const handleBurger = () => {
     setNavBurgerStatus(!navBurgerStatus);

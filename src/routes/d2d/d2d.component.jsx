@@ -11,7 +11,7 @@ import ManageLists from '../../components/manage-lists.component';
 import Popup from '../../components/popup.component';
 import TitleSection from '../../components/tile-section.component';
 
-import { UserDashContext } from '../../context/user-dash.context';
+import { UsersContext } from '../../context/users.context';
 
 function D2d() {
   //context
@@ -29,7 +29,7 @@ function D2d() {
     noteStatus,
     addList,
     removeList,
-  } = useContext(UserDashContext);
+  } = useContext(UsersContext);
 
   const [manageListsPopupStatus, setManageListsPopupStatus] = useState(false);
 
@@ -63,14 +63,14 @@ function D2d() {
           },
         };
         return (
-          <div className="block">
+          <div className="block" key={list.listId}>
             <List listObject={listObj} listLabel={list.listName} />
           </div>
         );
       });
 
       return (
-        <div className="column is-half">
+        <div className="column is-half" key={type.typeId}>
           <TitleSection title={type.typeName}>{listMap}</TitleSection>
         </div>
       );
