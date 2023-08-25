@@ -28,7 +28,7 @@ const TitleSection = ({ title, children }) => {
     <div>
       <div>
         <section
-          className="hero is-small is-dark is-cursor-pointer"
+          className="hero is-small is-primary is-cursor-pointer"
           onClick={toggleChildrenVis}
         >
           <div className="hero-body">

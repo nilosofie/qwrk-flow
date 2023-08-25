@@ -96,7 +96,7 @@ function D2d() {
   };
   //App return
   return (
-    <div className="App hero is-primary is-fullheight">
+    <div className="App hero is-fullheight">
       <br />
       <div className="container hero-head block">
         <p className="title">{`Hello, ${userName}`}</p>
