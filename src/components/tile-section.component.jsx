@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faMinimize, faMaximize } from '@fortawesome/free-solid-svg-icons';
 
 import autoAnimate from '@formkit/auto-animate';
 
@@ -16,6 +18,12 @@ const TitleSection = ({ title, children }) => {
   //---------------------------------
 
   const toggleChildrenVis = () => setChildernVis((oldState) => !oldState);
+
+  const minmax = childrenVis ? (
+    <FontAwesomeIcon icon={faMinimize} />
+  ) : (
+    <FontAwesomeIcon icon={faMaximize} />
+  );
   return (
     <div>
       <div>
@@ -25,7 +33,10 @@ const TitleSection = ({ title, children }) => {
         >
           <div className="hero-body">
             <div className="container has-text-centered">
-              <p className="subtitle">{title}</p>
+              <div className="columns is-mobile">
+                <span className="subtitle column">{title}</span>
+                <span className="column is-1">{minmax}</span>
+              </div>
             </div>
           </div>
         </section>

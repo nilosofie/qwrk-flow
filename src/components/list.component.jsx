@@ -5,7 +5,7 @@ import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import autoAnimate from '@formkit/auto-animate';
 
 import ListItem from './list-item.component';
-const List = ({ listObject, listLabel = 'label1' }) => {
+const List = ({ listObject, listLabel }) => {
   /*listObject Rules new
  {
     arr: [],
@@ -74,11 +74,15 @@ const List = ({ listObject, listLabel = 'label1' }) => {
 
   return (
     <div className="box block container">
-      <section className="hero is-info is-fullwidth is-small">
-        <div className="hero-body">
-          <p className="subtitle">{listLabel}</p>
-        </div>
-      </section>
+      {listLabel && (
+        <section className="hero is-info is-fullwidth is-small">
+          <div className="hero-body">
+            <div className="columns is-mobile">
+              <span className="subtitle column">{listLabel}</span>
+            </div>
+          </div>
+        </section>
+      )}
       <div className="container block is-fullwidth">
         <ul ref={parentRef} className="block">
           {mainArr.length !== 0 ? mainArr : <em>No Items to Show</em>}

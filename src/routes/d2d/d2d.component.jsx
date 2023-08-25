@@ -101,7 +101,7 @@ function D2d() {
       <div className="container hero-head block">
         <p className="title">{`Hello, ${userName}`}</p>
       </div>
-      <div className="container">
+      <div className="container is-fluid">
         <div className=" columns is-variable is-8 is-multiline">
           <div className="column is-half">
             <TitleSection title={'Notes'}>
@@ -142,15 +142,16 @@ function D2d() {
           {listTypeMap}
         </div>
         <br />
-        <List
-          listObject={{
-            arr: listItemsDone,
-            removeFromArray: removeDoneItem,
-            addToArrayVis: false,
-            sendToDoneVis: false,
-          }}
-          listLabel="Done"
-        />
+        <TitleSection title={'Done'}>
+          <List
+            listObject={{
+              arr: listItemsDone,
+              removeFromArray: removeDoneItem,
+              addToArrayVis: false,
+              sendToDoneVis: false,
+            }}
+          />
+        </TitleSection>
         <br />
       </div>
     </div>
