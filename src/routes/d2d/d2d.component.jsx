@@ -12,6 +12,7 @@ import Popup from '../../components/popup.component';
 import TitleSection from '../../components/tile-section.component';
 
 import { UsersContext } from '../../context/users.context';
+import { OrgContext } from '../../context/org.context';
 
 function D2d() {
   //context
@@ -30,6 +31,8 @@ function D2d() {
     addList,
     removeList,
   } = useContext(UsersContext);
+
+  const { orgId } = useContext(OrgContext);
 
   const [manageListsPopupStatus, setManageListsPopupStatus] = useState(false);
 

@@ -1,6 +1,13 @@
 import React, { useContext, useState } from 'react';
 
 import {
+  createOrgDocument,
+  getOrgCol,
+} from '../../utils/firebase/firestore-org.utils';
+
+import { UsersContext } from '../../context/users.context';
+
+import {
   faBriefcase,
   faUsers,
   faUser,
@@ -10,8 +17,32 @@ import Popup from '../../components/popup.component';
 import ClickCard from '../../components/click-card.component';
 
 function Home() {
+  const { uid } = useContext(UsersContext);
+
   const [orgPop, setOrgPop] = useState(false);
   const toggeleOrgPop = () => setOrgPop((oldStatus) => !oldStatus);
+
+  const [orgNamePop, setOrgNamePop] = useState(false);
+  const toggeleOrgNamePop = () => {
+    setOrgNamePop((oldStatus) => !oldStatus);
+    setOrgName('');
+  };
+
+  const [orgName, setOrgName] = useState('');
+
+  const orgNameTextHandler = (e) => setOrgName(e.target.value);
+
+  const createOrgPopupHandler = () => {
+    toggeleOrgPop();
+    toggeleOrgNamePop();
+  };
+
+  const createOrgSubmitHandler = (event) => {
+    event.preventDefault();
+    createOrgDocument(orgName, uid);
+    createOrgPopupHandler();
+  };
+
   return (
     <div className="hero is-primary is-fullheight">
       <br />
@@ -32,7 +63,9 @@ function Home() {
           </div>
 
           <div className="column is-half">
-            <ClickCard icon={faUsers}>Select Role</ClickCard>
+            <ClickCard icon={faUsers} onClick={() => getOrgCol(uid)}>
+              Select Role
+            </ClickCard>
           </div>
         </div>
       </div>
@@ -43,10 +76,34 @@ function Home() {
               <ClickCard icon={faUser}>Personal</ClickCard>
             </div>
             <div className="column is-third">
-              <ClickCard icon={faBriefcase}>Create an Orginization</ClickCard>
+              <ClickCard icon={faBriefcase} onClick={createOrgPopupHandler}>
+                Create an Orginization
+              </ClickCard>
             </div>
           </div>
         </div>
+      </Popup>
+      <Popup trigger={orgNamePop} closePopup={toggeleOrgNamePop}>
+        <form onSubmit={createOrgSubmitHandler} className="box">
+          <div className="field has-text-centered">
+            <div className="control">
+              <input
+                className="input"
+                type="text"
+                placeholder="Orginization Name"
+                value={orgName}
+                onChange={orgNameTextHandler}
+              />
+            </div>
+          </div>
+          <div className="field has-text-centered">
+            <div className="control">
+              <button type="submit" className="button is-primary">
+                Submit
+              </button>
+            </div>
+          </div>
+        </form>
       </Popup>
     </div>
   );
