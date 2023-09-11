@@ -78,3 +78,52 @@ export const org = {
     },
   ],
 };
+
+export const users = {
+  userDisplayName: 'Engela',
+  userEmail: 'lombard.engela@icloud.com',
+  userCreatedAt: 'August',
+};
+
+export const orgs = {
+  orgOwner: '1234',
+  orgCreatedAt: 'August',
+  orgName: 'qwrk',
+  orgUsers: ['1234', '4321'],
+};
+
+export const notes = {
+  orgId: '1234',
+  userId: '1234',
+  lastUpdate: Date,
+  content: 'note content',
+};
+
+export const listTypes = {
+  listTypeName: 'Once-off (Action)',
+  orgId: '1234',
+  nodeId: '1234',
+};
+
+export const orgNodes = {
+  orgId: 'abc',
+  parentId: '0',
+  id: '1',
+  name: 'Root',
+  title: 'Root',
+  children: [],
+};
+
+export const lists = {
+  listName: 'List 1',
+  listOwner: 'abc123',
+  listActive: true,
+};
+
+export const listItems = {
+  listId: 'l001',
+  listTypeId: 't001',
+  item: 'Item 1',
+  active: true,
+  completed: false,
+};

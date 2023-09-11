@@ -16,12 +16,15 @@ export const db = getFirestore(); //users
 
 export const createOrgDocument = async (orgName = 'Unnamed Org', uid) => {
   const newOrgID = nanoid();
+  const createdAt = new Date();
   const orgDocRef = doc(db, 'org', newOrgID);
 
   try {
     await setDoc(orgDocRef, {
       orgName: orgName,
       users: [uid],
+      createdAt: createdAt,
+      active: true,
     });
   } catch (error) {
     console.log('error creating the user', error.message);
@@ -33,27 +36,20 @@ export const createOrgDocument = async (orgName = 'Unnamed Org', uid) => {
 export const getOrgCol = async (uid) => {
   const q = query(collection(db, 'org'), where('users', 'array-contains', uid));
 
+  const retArr = [];
+
   const querySnapshot = await getDocs(q);
 
   querySnapshot.forEach((doc) => {
-    console.log(doc.id, ' => ', doc.data());
+    retArr.push({ orgId: doc.id, orgName: doc.data().orgName });
   });
-  /*const orgs = await getDocs(collection(db, 'org'));
 
-  orgs.forEach((doc) => {
-    console.log(doc.id, ' => ', doc.data());
-  });*/
-};
-
-export const getUserDoc = async (uid) => {
-  const userDocRef = await doc(db, 'users', uid);
-  const userDoc = await getDoc(userDocRef);
-  return userDoc.data();
+  console.log(retArr);
+  return retArr;
 };
 
 //users
-export const realTimeUserListener = (callback, uid) =>
-  onSnapshot(doc(db, 'users', uid), callback);
+
 //const userDocRef = await doc(db, 'users', uid);
 
 //user

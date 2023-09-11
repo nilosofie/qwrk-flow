@@ -1,0 +1,9 @@
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+}
+
+.fade-animation {
+  animation: fadeIn 0.75s infinite alternate;
+}

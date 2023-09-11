@@ -7,7 +7,13 @@ import { signOutUser } from '../../utils/firebase/firebase.utils';
 
 import SignIn from '../sign-in/sign-in.component';
 
+import LoadingScreen from '../../components/loading-screen/loading-screen.component';
+
 import MainLogo from '../../assets/Qwrk Embleem Pakkie sb 130423 v1.png';
+
+import { auth } from '../../utils/firebase/firebase.utils';
+
+import { useAuthState } from 'react-firebase-hooks/auth';
 
 const Navigation = () => {
   const [navBurgerStatus, setNavBurgerStatus] = useState(false);
@@ -17,7 +23,21 @@ const Navigation = () => {
     setNavBurgerStatus(!navBurgerStatus);
   };
 
-  return userName ? (
+  const [user, loading, error] = useAuthState(auth);
+
+  if (loading) {
+    return <LoadingScreen />;
+  }
+
+  if (error) {
+    return (
+      <div>
+        <p>Error: {error}</p>
+      </div>
+    );
+  }
+
+  return user ? (
     <div>
       <nav className="navbar is-spaced">
         <div className="navbar-brand">
@@ -45,7 +65,7 @@ const Navigation = () => {
             >
               <h1>D2D</h1>
             </Link>
-            {userName ? (
+            {user ? (
               <Link type className="navbar-item" onClick={signOutUser}>
                 Sign Out
               </Link>

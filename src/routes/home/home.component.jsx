@@ -11,16 +11,23 @@ import {
   faBriefcase,
   faUsers,
   faUser,
+  faSitemap,
 } from '@fortawesome/free-solid-svg-icons';
 
 import Popup from '../../components/popup.component';
 import ClickCard from '../../components/click-card.component';
+import { org } from '../../data/user-data';
 
 function Home() {
   const { uid } = useContext(UsersContext);
 
+  const [orgs, setOrgs] = useState();
+
   const [orgPop, setOrgPop] = useState(false);
-  const toggeleOrgPop = () => setOrgPop((oldStatus) => !oldStatus);
+  const toggeleOrgPop = async () => {
+    setOrgPop((oldStatus) => !oldStatus);
+    setOrgs(await getOrgCol(uid));
+  };
 
   const [orgNamePop, setOrgNamePop] = useState(false);
   const toggeleOrgNamePop = () => {
@@ -42,6 +49,16 @@ function Home() {
     createOrgDocument(orgName, uid);
     createOrgPopupHandler();
   };
+
+  const orgsMap = orgs ? (
+    orgs.map((org) => (
+      <div className="column is-half">
+        <ClickCard icon={faSitemap}>{org.orgName}</ClickCard>
+      </div>
+    ))
+  ) : (
+    <div>Nothing to show</div>
+  );
 
   return (
     <div className="hero is-primary is-fullheight">
@@ -72,10 +89,11 @@ function Home() {
       <Popup trigger={orgPop} closePopup={toggeleOrgPop}>
         <div className="box has-background-grey-lighter">
           <div className="columns is-multiline">
-            <div className="column is-third">
+            <div className="column is-half">
               <ClickCard icon={faUser}>Personal</ClickCard>
             </div>
-            <div className="column is-third">
+            {orgsMap}
+            <div className="column is-half">
               <ClickCard icon={faBriefcase} onClick={createOrgPopupHandler}>
                 Create an Orginization
               </ClickCard>
