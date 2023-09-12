@@ -1,8 +1,7 @@
-import { useState, useContext } from 'react';
+import { useState, useContext, useEffect } from 'react';
 
 import { Outlet, Link } from 'react-router-dom';
 
-import { UsersContext } from '../../context/users.context';
 import { signOutUser } from '../../utils/firebase/firebase.utils';
 
 import SignIn from '../sign-in/sign-in.component';
@@ -15,15 +14,22 @@ import { auth } from '../../utils/firebase/firebase.utils';
 
 import { useAuthState } from 'react-firebase-hooks/auth';
 
+import { UsersContext } from '../../context/users.context';
+
 const Navigation = () => {
+  const { setUser } = useContext(UsersContext);
+
   const [navBurgerStatus, setNavBurgerStatus] = useState(false);
-  const { userName } = useContext(UsersContext);
 
   const handleBurger = () => {
     setNavBurgerStatus(!navBurgerStatus);
   };
 
   const [user, loading, error] = useAuthState(auth);
+
+  useEffect(() => {
+    user ? setUser(user.uid, user.displayName) : setUser(null, null);
+  }, [user]);
 
   if (loading) {
     return <LoadingScreen />;
@@ -58,6 +64,13 @@ const Navigation = () => {
         </div>
         <div className={`navbar-menu ${navBurgerStatus && 'is-active'}`}>
           <div className="navbar-end">
+            <Link
+              to="/home2"
+              className="navbar-item"
+              onClick={() => setNavBurgerStatus(false)}
+            >
+              <h1>New Home</h1>
+            </Link>
             <Link
               to="/d2d"
               className="navbar-item"

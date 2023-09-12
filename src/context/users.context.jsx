@@ -33,6 +33,7 @@ export const UsersContext = createContext({
   noteStatus: false,
   addList: () => {},
   removeList: () => {},
+  setUser: () => {},
 });
 
 export const UsersProvider = ({ children }) => {
@@ -45,31 +46,31 @@ export const UsersProvider = ({ children }) => {
   const [listItemsDone, setListItemsDone] = useState();
   const [noteStatus, setNoteStatus] = useState(false);
 
-  useEffect(() => {
-    const unsubscribeUser = onAuthStateChangedListener(async (user) => {
-      if (user) {
-        await creatUserDocumentFromAuth(user);
-        updateUser(getUserDoc(user.uid));
-        setUid(user.uid);
-      } else clearUser();
-    });
+  // useEffect(() => {
+  //   const unsubscribeUser = onAuthStateChangedListener(async (user) => {
+  //     if (user) {
+  //       await creatUserDocumentFromAuth(user);
+  //       updateUser(getUserDoc(user.uid));
+  //       setUid(user.uid);
+  //     } else clearUser();
+  //   });
 
-    return unsubscribeUser;
-  }, []);
+  //   return unsubscribeUser;
+  // }, []);
 
-  useEffect(() => {
-    if (uid) {
-      const unsubscribeRT = realTimeUserListener(async (snapshot) => {
-        if (snapshot) {
-          setListItems(snapshot.data().d2dData.listitems);
-          setLists(snapshot.data().d2dData.lists);
-          setListItemsDone(snapshot.data().d2dData.listitemsdone);
-        } else clearUser();
-      }, uid);
+  // useEffect(() => {
+  //   if (uid) {
+  //     const unsubscribeRT = realTimeUserListener(async (snapshot) => {
+  //       if (snapshot) {
+  //         setListItems(snapshot.data().d2dData.listitems);
+  //         setLists(snapshot.data().d2dData.lists);
+  //         setListItemsDone(snapshot.data().d2dData.listitemsdone);
+  //       } else clearUser();
+  //     }, uid);
 
-      return unsubscribeRT;
-    }
-  }, [uid]);
+  //     return unsubscribeRT;
+  //   }
+  // }, [uid]);
 
   const updateUser = async (userDoc) => {
     const { d2dData, displayName } = await userDoc;
@@ -148,6 +149,12 @@ export const UsersProvider = ({ children }) => {
   //   if (uid) updateListItemsDone(uid, listItemsDone);
   // }, [listItemsDone]);
 
+  //new user Code
+  const setUser = (uid, displayName) => {
+    setUid(uid);
+    setUserName(displayName);
+  };
+
   const value = {
     uid,
     userName,
@@ -167,6 +174,7 @@ export const UsersProvider = ({ children }) => {
     noteStatus,
     addList,
     removeList,
+    setUser,
   };
 
   return (

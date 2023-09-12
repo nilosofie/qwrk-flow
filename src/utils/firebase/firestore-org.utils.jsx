@@ -10,7 +10,11 @@ import {
   query,
   where,
 } from 'firebase/firestore';
+
+//import { ref, getDatabase } from 'firebase/database';
 import { nanoid } from 'nanoid';
+
+import { useCollectionData } from 'react-firebase-hooks/firestore';
 
 export const db = getFirestore(); //users
 
@@ -46,6 +50,15 @@ export const getOrgCol = async (uid) => {
 
   console.log(retArr);
   return retArr;
+};
+
+export const orgCollection = (uid) => {
+  const q = query(collection(db, 'org'), where('users', 'array-contains', uid));
+
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const [docs, loading, error, snapshot] = useCollectionData(q);
+
+  return { docs, loading, error, snapshot };
 };
 
 //users
