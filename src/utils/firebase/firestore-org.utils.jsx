@@ -9,6 +9,7 @@ import {
   getDocs,
   query,
   where,
+  addDoc,
 } from 'firebase/firestore';
 
 //import { ref, getDatabase } from 'firebase/database';
@@ -26,6 +27,7 @@ export const createOrgDocument = async (orgName = 'Unnamed Org', uid) => {
   try {
     await setDoc(orgDocRef, {
       orgName: orgName,
+      orgId: newOrgID,
       users: [uid],
       createdAt: createdAt,
       active: true,
@@ -65,11 +67,17 @@ export const orgCollection = (uid) => {
 
 //const userDocRef = await doc(db, 'users', uid);
 
-//user
-export const updateNote = async (uid, note) => {
+//Notes updating for org
+export const updateNote = async (uid, orgId, note) => {
+  const updatededAt = new Date();
   if (uid) {
-    const userRef = doc(db, 'users', uid);
-    await updateDoc(userRef, { 'd2dData.notes': note });
+    const noteRef = doc(db, `org/${orgId}/notes/${uid}`);
+    await setDoc(noteRef, {
+      orgId,
+      uid,
+      note,
+      updatededAt,
+    });
   }
 };
 

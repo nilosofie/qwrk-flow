@@ -10,7 +10,6 @@ import {
   updateListItems,
   updateListItemsDone,
   updateLists,
-  realTimeUserListener,
 } from '../utils/firebase/firestore-users.utils';
 
 // CONTEXT
@@ -46,17 +45,18 @@ export const UsersProvider = ({ children }) => {
   const [listItemsDone, setListItemsDone] = useState();
   const [noteStatus, setNoteStatus] = useState(false);
 
-  // useEffect(() => {
-  //   const unsubscribeUser = onAuthStateChangedListener(async (user) => {
-  //     if (user) {
-  //       await creatUserDocumentFromAuth(user);
-  //       updateUser(getUserDoc(user.uid));
-  //       setUid(user.uid);
-  //     } else clearUser();
-  //   });
+  //Creates user
+  useEffect(() => {
+    const unsubscribeUser = onAuthStateChangedListener(async (user) => {
+      if (user) {
+        await creatUserDocumentFromAuth(user);
+        updateUser(getUserDoc(user.uid));
+        setUid(user.uid);
+      } else clearUser();
+    });
 
-  //   return unsubscribeUser;
-  // }, []);
+    return unsubscribeUser;
+  }, []);
 
   // useEffect(() => {
   //   if (uid) {

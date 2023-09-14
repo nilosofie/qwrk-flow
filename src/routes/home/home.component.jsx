@@ -1,12 +1,14 @@
 import React, { useContext, useState } from 'react';
 
-import {
-  createOrgDocument,
-  getOrgCol,
-  orgCollection,
-} from '../../utils/firebase/firestore-org.utils';
+import { query, collection, getFirestore, where } from 'firebase/firestore';
+
+import { useCollectionData } from 'react-firebase-hooks/firestore';
+
+import { createOrgDocument } from '../../utils/firebase/firestore-org.utils';
 
 import { UsersContext } from '../../context/users.context';
+
+import { OrgContext } from '../../context/org.context';
 
 import {
   faBriefcase,
@@ -17,28 +19,42 @@ import {
 
 import Popup from '../../components/popup.component';
 import ClickCard from '../../components/click-card.component';
+import LoadingScreen from '../../components/loading-screen/loading-screen.component';
 
-function Home() {
-  const { uid } = useContext(UsersContext);
+const Home = () => {
+  //Context-----------------------------------------------------------------------------------
 
-  const [orgs, setOrgs] = useState();
+  const { uid, userName } = useContext(UsersContext);
+
+  const { orgName, updateOrgId, orgState } = useContext(OrgContext);
+
+  //Database-------------------------------------------------------------------------------------------
+  const db = getFirestore();
+
+  const orgsQuery = uid
+    ? query(collection(db, 'org'), where('users', 'array-contains', uid))
+    : null;
+
+  const [orgs, loading, error] = useCollectionData(orgsQuery);
+
+  //Popups------------------------------------------------------------------------------------------
 
   const [orgPop, setOrgPop] = useState(false);
-  const toggeleOrgPop = async () => {
+  const toggeleOrgPop = () => {
     setOrgPop((oldStatus) => !oldStatus);
-    setOrgs(await getOrgCol(uid));
-    //console.log('get: ', getOrgCol(uid), 'RT: ', orgCollection(uid));
   };
 
   const [orgNamePop, setOrgNamePop] = useState(false);
   const toggeleOrgNamePop = () => {
     setOrgNamePop((oldStatus) => !oldStatus);
-    setOrgName('');
+    setNewOrgName('');
   };
 
-  const [orgName, setOrgName] = useState('');
+  //Create Org--------------------------------------------------------------------------------------------
 
-  const orgNameTextHandler = (e) => setOrgName(e.target.value);
+  const [newOrgName, setNewOrgName] = useState('');
+
+  const orgNameTextHandler = (e) => setNewOrgName(e.target.value);
 
   const createOrgPopupHandler = () => {
     toggeleOrgPop();
@@ -47,42 +63,61 @@ function Home() {
 
   const createOrgSubmitHandler = (event) => {
     event.preventDefault();
-    createOrgDocument(orgName, uid);
+    createOrgDocument(newOrgName, uid);
     createOrgPopupHandler();
   };
 
+  //Select Org-------------------------------------------------------------------------------
+
+  const orgSelect = (orgId) => {
+    updateOrgId(orgId);
+    toggeleOrgPop();
+  };
+  //Maps----------------------------------------------------------------------------------------
+
   const orgsMap = orgs ? (
     orgs.map((org) => (
-      <div className="column is-half">
-        <ClickCard icon={faSitemap}>{org.orgName}</ClickCard>
+      <div className="column is-half" key={org.orgId}>
+        <ClickCard icon={faSitemap} onClick={() => orgSelect(org.orgId)}>
+          {org.orgName}
+        </ClickCard>
       </div>
     ))
   ) : (
     <div>Nothing to show</div>
   );
 
+  //Return-----------------------------------------------------------------------------------------
+
+  if (loading) return <LoadingScreen />;
+
   return (
     <div className="hero is-primary is-fullheight">
       <br />
       <div className="hero-head block has-text-centered">
-        <p className="title">{`Hello, John`}</p>
+        <p className="title">{`Hello, ${userName}`}</p>
       </div>
       <br />
       <div className="container">
         <div className="columns is-variable is-8 is-multiline">
           <div className="column is-half">
-            <ClickCard
-              icon={faBriefcase}
-              content={'Select Orginization'}
-              onClick={toggeleOrgPop}
-            >
-              Select Orginization
-            </ClickCard>
+            {orgState ? (
+              <ClickCard icon={faSitemap} onClick={toggeleOrgPop}>
+                <p>Orginization: {orgName}</p>
+              </ClickCard>
+            ) : (
+              <ClickCard icon={faBriefcase} onClick={toggeleOrgPop}>
+                <p>Select Orginization</p>
+              </ClickCard>
+            )}
           </div>
 
           <div className="column is-half">
-            <ClickCard icon={faUsers} onClick={() => getOrgCol(uid)}>
-              Select Role
+            <ClickCard
+              icon={faUsers}
+              onClick={() => console.log('roles clicked')}
+            >
+              <p>Select Role</p>
             </ClickCard>
           </div>
         </div>
@@ -110,7 +145,7 @@ function Home() {
                 className="input"
                 type="text"
                 placeholder="Orginization Name"
-                value={orgName}
+                value={newOrgName}
                 onChange={orgNameTextHandler}
               />
             </div>
@@ -126,6 +161,6 @@ function Home() {
       </Popup>
     </div>
   );
-}
+};
 
 export default Home;

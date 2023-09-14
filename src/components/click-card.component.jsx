@@ -17,7 +17,7 @@ function ClickCard({ icon, children, onClick = () => {} }) {
       )}
       <div className="card-content">
         <div className="content has-text-centered">
-          <p>{children}</p>
+          <div>{children}</div>
         </div>
       </div>
     </div>

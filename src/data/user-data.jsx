@@ -77,6 +77,14 @@ export const org = {
       completed: false,
     },
   ],
+  notes: [
+    {
+      userId: '1234',
+      lastUpdate: 'Date',
+      note: '',
+      noteId: '',
+    },
+  ],
 };
 
 export const users = {

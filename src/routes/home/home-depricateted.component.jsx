@@ -1,10 +1,10 @@
 import React, { useContext, useState } from 'react';
 
-import { query, collection, getFirestore, where } from 'firebase/firestore';
-
-import { useCollectionData } from 'react-firebase-hooks/firestore';
-
-import { createOrgDocument } from '../../utils/firebase/firestore-org.utils';
+import {
+  createOrgDocument,
+  getOrgCol,
+  orgCollection,
+} from '../../utils/firebase/firestore-org.utils';
 
 import { UsersContext } from '../../context/users.context';
 
@@ -18,20 +18,16 @@ import {
 import Popup from '../../components/popup.component';
 import ClickCard from '../../components/click-card.component';
 
-const Home2 = () => {
-  const { uid, userName } = useContext(UsersContext);
+function Home() {
+  const { uid } = useContext(UsersContext);
 
-  const db = getFirestore();
-
-  const orgsQuery = uid
-    ? query(collection(db, 'org'), where('users', 'array-contains', uid))
-    : null;
-
-  const [orgs, loading, error] = useCollectionData(orgsQuery);
+  const [orgs, setOrgs] = useState();
 
   const [orgPop, setOrgPop] = useState(false);
   const toggeleOrgPop = async () => {
     setOrgPop((oldStatus) => !oldStatus);
+    setOrgs(await getOrgCol(uid));
+    //console.log('get: ', getOrgCol(uid), 'RT: ', orgCollection(uid));
   };
 
   const [orgNamePop, setOrgNamePop] = useState(false);
@@ -69,7 +65,7 @@ const Home2 = () => {
     <div className="hero is-primary is-fullheight">
       <br />
       <div className="hero-head block has-text-centered">
-        <p className="title">{`Hello, ${userName}`}</p>
+        <p className="title">{`Hello, John`}</p>
       </div>
       <br />
       <div className="container">
@@ -85,10 +81,7 @@ const Home2 = () => {
           </div>
 
           <div className="column is-half">
-            <ClickCard
-              icon={faUsers}
-              onClick={() => console.log('roles clicked')}
-            >
+            <ClickCard icon={faUsers} onClick={() => getOrgCol(uid)}>
               Select Role
             </ClickCard>
           </div>
@@ -133,6 +126,6 @@ const Home2 = () => {
       </Popup>
     </div>
   );
-};
+}
 
-export default Home2;
+export default Home;

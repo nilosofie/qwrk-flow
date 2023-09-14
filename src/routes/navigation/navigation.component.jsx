@@ -65,18 +65,18 @@ const Navigation = () => {
         <div className={`navbar-menu ${navBurgerStatus && 'is-active'}`}>
           <div className="navbar-end">
             <Link
-              to="/home2"
-              className="navbar-item"
-              onClick={() => setNavBurgerStatus(false)}
-            >
-              <h1>New Home</h1>
-            </Link>
-            <Link
               to="/d2d"
               className="navbar-item"
               onClick={() => setNavBurgerStatus(false)}
             >
               <h1>D2D</h1>
+            </Link>
+            <Link
+              to="/d2d2"
+              className="navbar-item"
+              onClick={() => setNavBurgerStatus(false)}
+            >
+              <h1>D2D2</h1>
             </Link>
             {user ? (
               <Link type className="navbar-item" onClick={signOutUser}>
