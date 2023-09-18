@@ -4,7 +4,10 @@ import { query, collection, getFirestore, where } from 'firebase/firestore';
 
 import { useCollectionData } from 'react-firebase-hooks/firestore';
 
-import { createOrgDocument } from '../../utils/firebase/firestore-org.utils';
+import {
+  createOrgDocument,
+  createUserOrgDocument,
+} from '../../utils/firebase/firestore-org.utils';
 
 import { UsersContext } from '../../context/users.context';
 
@@ -35,7 +38,7 @@ const Home = () => {
     ? query(collection(db, 'org'), where('users', 'array-contains', uid))
     : null;
 
-  const [orgs, loading, error] = useCollectionData(orgsQuery);
+  const [orgs, loading] = useCollectionData(orgsQuery);
 
   //Popups------------------------------------------------------------------------------------------
 
@@ -71,6 +74,12 @@ const Home = () => {
 
   const orgSelect = (orgId) => {
     updateOrgId(orgId);
+    toggeleOrgPop();
+  };
+
+  const userOrgSelect = () => {
+    createUserOrgDocument(userName, uid);
+    updateOrgId(uid);
     toggeleOrgPop();
   };
   //Maps----------------------------------------------------------------------------------------
@@ -126,7 +135,9 @@ const Home = () => {
         <div className="box has-background-grey-lighter">
           <div className="columns is-multiline">
             <div className="column is-half">
-              <ClickCard icon={faUser}>Personal</ClickCard>
+              <ClickCard icon={faUser} onClick={userOrgSelect}>
+                Personal
+              </ClickCard>
             </div>
             {orgsMap}
             <div className="column is-half">

@@ -91,15 +91,18 @@ export const users = {
   userDisplayName: 'Engela',
   userEmail: 'lombard.engela@icloud.com',
   userCreatedAt: 'August',
+  uid: '1234AB',
 };
 
 export const orgs = {
-  orgOwner: '1234',
+  orgOwner: '1234AK',
   orgCreatedAt: 'August',
   orgName: 'qwrk',
+  orgId: '1234MA',
   orgUsers: ['1234', '4321'],
 };
 
+//notes - sub org
 export const notes = {
   orgId: '1234',
   userId: '1234',

@@ -20,7 +20,7 @@ export const OrgContext = createContext({
 export const OrgProvider = ({ children }) => {
   //Context
 
-  const { uid } = useContext(UsersContext);
+  const { uid, userName } = useContext(UsersContext);
 
   //states
   const [orgState, setOrgState] = useState(false);
@@ -32,7 +32,7 @@ export const OrgProvider = ({ children }) => {
   const db = getFirestore();
 
   const orgQuery = orgId ? query(doc(db, `org/${orgId}`)) : null;
-  const [org, orgLoading, orgError] = useDocument(orgQuery);
+  const [org, orgLoading] = useDocument(orgQuery);
 
   const notesQuery = orgId ? query(doc(db, `org/${orgId}/notes/${uid}`)) : null;
   const [notes, notesLoading, notesError] = useDocumentData(notesQuery);

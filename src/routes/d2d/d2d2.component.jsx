@@ -13,25 +13,54 @@ import TitleSection from '../../components/tile-section.component';
 import { UsersContext } from '../../context/users.context';
 import { OrgContext } from '../../context/org.context';
 
+import { addListItem } from '../../utils/firebase/firestore-org.utils';
+
+import { query, collection, getFirestore, where } from 'firebase/firestore';
+
+import { useCollectionData } from 'react-firebase-hooks/firestore';
+import { nanoid } from 'nanoid';
+
 function D2d2() {
   //context
   const {
     userName,
-    listTypes,
-    lists,
+    uid,
     listItems,
     listItemsDone,
-    addListItem,
     sendToDone,
     removeListItem,
     removeDoneItem,
-    sendNoteToFS,
-    noteStatus,
     addList,
     removeList,
   } = useContext(UsersContext);
 
   const { orgId } = useContext(OrgContext);
+
+  //Database
+
+  const db = getFirestore();
+
+  //get ListTypes
+  const listTypesQuery = uid
+    ? query(collection(db, 'org', orgId, 'listTypes'))
+    : null;
+
+  const [listTypes, listTypeLoading, listTypeError] =
+    useCollectionData(listTypesQuery);
+
+  console.log(listTypes);
+
+  //get Lists
+
+  const listsQuery = uid ? query(collection(db, 'org', orgId, 'lists')) : null;
+
+  const [lists, listsLoading, listsError] = useCollectionData(listsQuery);
+
+  console.log(lists);
+
+  // ListItems
+
+  // Modals
 
   const [manageListsPopupStatus, setManageListsPopupStatus] = useState(false);
 
@@ -51,9 +80,20 @@ function D2d2() {
             listId === list.listId && typeId === type.typeId
         );
 
+        const addListItemHandler = (listItem, listId, listTypeId) => {
+          addListItem(
+            listItem,
+            uid,
+            orgId,
+            list.listId,
+            type.listTypeId,
+            nanoid()
+          );
+        };
+
         const listObj = {
           arr: listItemArray,
-          addToArray: addListItem, //Add Item
+          addToArray: addListItemHandler, //Add Item
           removeFromArray: removeListItem, //Delete
           sendToDone: sendToDone, // Move Item from sub array to main array
           addToArrayVis: true,
@@ -61,27 +101,27 @@ function D2d2() {
           sendToDoneVis: true,
           dna: {
             listId: list.listId,
-            typeId: type.typeId,
+            typeId: type.listTypeId,
           },
         };
         return (
           <div className="block" key={list.listId}>
-            <List listObject={listObj} listLabel={list.listName} />
+            <List listObject={listObj} listLabel={list.list} />
           </div>
         );
       });
 
       return (
         <div className="column is-half" key={type.typeId}>
-          <TitleSection title={type.typeName}>{listMap}</TitleSection>
+          <TitleSection title={type.listType}>{listMap}</TitleSection>
         </div>
       );
     });
 
   //list map to be moved
-  const listsMap = lists.map((list) => ({
+  const listsMap = lists?.map((list) => ({
     listId: list.listId,
-    listName: list.listName,
+    listName: list.list,
   }));
 
   const manageListsObj = {
