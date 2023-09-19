@@ -25,7 +25,6 @@ function D2d2() {
   const {
     userName,
     uid,
-    listItems,
     listItemsDone,
     sendToDone,
     removeListItem,
@@ -58,8 +57,14 @@ function D2d2() {
 
   console.log(lists);
 
-  // ListItems
+  // get ListItems
+  const listItemsQuery = uid
+    ? query(collection(db, 'org', orgId, 'listItems'))
+    : null;
+  const [listItems, listsItemsLoading, listsItemsError] =
+    useCollectionData(listItemsQuery);
 
+  console.log(listItems);
   // Modals
 
   const [manageListsPopupStatus, setManageListsPopupStatus] = useState(false);
@@ -76,8 +81,8 @@ function D2d2() {
       //Lists Map
       const listMap = lists.map((list) => {
         const listItemArray = listItems.filter(
-          ({ listId, typeId }) =>
-            listId === list.listId && typeId === type.typeId
+          ({ listId, listTypeId }) =>
+            listId === list.listId && listTypeId === type.listTypeId
         );
 
         const addListItemHandler = (listItem, listId, listTypeId) => {
@@ -137,6 +142,9 @@ function D2d2() {
     },
   };
   //App return
+
+  if (!orgId) return <div>No Orginisation Selected</div>;
+
   return (
     <div className="App hero is-fullheight">
       <br />

@@ -50,12 +50,12 @@ const List = ({ listObject, listLabel }) => {
   }, [parentRef]);
   //---------------------------------
 
-  const mainArr = arr.map(({ listItemId, item }) => {
+  const mainArr = arr.map(({ listItemId, listItem }) => {
     return (
       <ListItem
         id={listItemId}
         key={listItemId}
-        value={item}
+        value={listItem}
         removeFromArray={() => removeFromArray(listItemId)}
         sendToDone={() => sendToDone(listItemId)}
         removeFromArrayVis={removeFromArrayVis}
