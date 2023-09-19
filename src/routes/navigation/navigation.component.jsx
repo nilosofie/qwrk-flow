@@ -1,6 +1,6 @@
 import { useState, useContext, useEffect } from 'react';
 
-import { Outlet, Link } from 'react-router-dom';
+import { Outlet, Link, useNavigate } from 'react-router-dom';
 
 import { signOutUser } from '../../utils/firebase/firebase.utils';
 
@@ -16,14 +16,23 @@ import { useAuthState } from 'react-firebase-hooks/auth';
 
 import { UsersContext } from '../../context/users.context';
 
+import { OrgContext } from '../../context/org.context';
+
 const Navigation = () => {
   const { setUser } = useContext(UsersContext);
+  const { orgId } = useContext(OrgContext);
 
   const [navBurgerStatus, setNavBurgerStatus] = useState(false);
 
   const handleBurger = () => {
     setNavBurgerStatus(!navBurgerStatus);
   };
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!orgId) navigate('/');
+  }, [orgId]);
 
   const [user, loading, error] = useAuthState(auth);
 
@@ -94,7 +103,7 @@ const Navigation = () => {
           </div>
         </div>
       </nav>
-      <Outlet />
+      {<Outlet />}
     </div>
   ) : (
     <SignIn />

@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 
 import 'bulma/css/bulma.min.css';
 
@@ -19,6 +19,7 @@ import { query, collection, getFirestore, where } from 'firebase/firestore';
 
 import { useCollectionData } from 'react-firebase-hooks/firestore';
 import { nanoid } from 'nanoid';
+import LoadingScreen from '../../components/loading-screen/loading-screen.component';
 
 function D2d2() {
   //context
@@ -33,7 +34,9 @@ function D2d2() {
     removeList,
   } = useContext(UsersContext);
 
-  const { orgId } = useContext(OrgContext);
+  const { orgId, updateOrgId } = useContext(OrgContext);
+
+  const [loading, setLoading] = useState(true);
 
   //Database
 
@@ -73,14 +76,17 @@ function D2d2() {
     setManageListsPopupStatus((old) => !old);
   };
 
+  //lists.length !== 0
+
   // Map Types
   const listTypeMap =
+    !loading &&
     listTypes &&
-    lists.length !== 0 &&
+    lists &&
     listTypes.map((type) => {
       //Lists Map
       const listMap = lists.map((list) => {
-        const listItemArray = listItems.filter(
+        const listItemArray = listItems?.filter(
           ({ listId, listTypeId }) =>
             listId === list.listId && listTypeId === type.listTypeId
         );
@@ -141,9 +147,15 @@ function D2d2() {
       typeId: '',
     },
   };
+
+  useEffect(() => {
+    if (listTypeLoading && listsLoading && listsItemsLoading) {
+      setLoading(true);
+    } else setLoading(false);
+  }, [listTypeLoading, listsLoading, listsItemsLoading]);
   //App return
 
-  if (!orgId) return <div>No Orginisation Selected</div>;
+  if (loading) return <LoadingScreen />;
 
   return (
     <div className="App hero is-fullheight">
