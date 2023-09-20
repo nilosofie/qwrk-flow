@@ -1,21 +1,20 @@
 import React, { useContext, useEffect, useState } from 'react';
 
-import { OrgContext } from '../context/org.context';
-
 import LoadingScreen from './loading-screen/loading-screen.component';
 
+import { OrgContext } from '../context/org.context';
+
 function Notes() {
+  //Context//////////////////////////////////////////////
   const { saveNote, notesObj } = useContext(OrgContext);
 
   const { notes, notesLoading } = notesObj;
 
+  //Local States/////////////////////////////////////////
   const [localNotes, setLocalNotes] = useState('');
   const [noteStatus, setNoteStatus] = useState(false);
 
-  useEffect(() => {
-    notes && setLocalNotes(notes.note);
-  }, [notes]);
-
+  //Local Sate Handlers
   const handleLocalNote = (event) => {
     setLocalNotes(event.target.value);
     setNoteStatus(true);
@@ -26,6 +25,12 @@ function Notes() {
     setNoteStatus((oldStatus) => !oldStatus);
   };
 
+  //Use Effect/////////////////////////////////////////////////////
+  useEffect(() => {
+    notes && setLocalNotes(notes.note);
+  }, [notes]);
+
+  //Component return/////////////////////////////////////////////
   return notesLoading ? (
     <LoadingScreen />
   ) : (

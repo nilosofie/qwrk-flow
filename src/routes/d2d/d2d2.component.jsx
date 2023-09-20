@@ -1,44 +1,38 @@
 import React, { useContext, useEffect, useState } from 'react';
 
 import 'bulma/css/bulma.min.css';
-
 import '../../mystyles.scss';
+
+import { query, collection, getFirestore, where } from 'firebase/firestore';
+import { useCollectionData } from 'react-firebase-hooks/firestore';
+import { nanoid } from 'nanoid';
 
 import Notes from '../../components/notes.component';
 import List from '../../components/list.component';
 import ManageLists from '../../components/manage-lists.component';
 import Popup from '../../components/popup.component';
 import TitleSection from '../../components/tile-section.component';
+import LoadingScreen from '../../components/loading-screen/loading-screen.component';
 
 import { UsersContext } from '../../context/users.context';
 import { OrgContext } from '../../context/org.context';
-
-import { addListItem } from '../../utils/firebase/firestore-org.utils';
-
-import { query, collection, getFirestore, where } from 'firebase/firestore';
-
-import { useCollectionData } from 'react-firebase-hooks/firestore';
-import { nanoid } from 'nanoid';
-import LoadingScreen from '../../components/loading-screen/loading-screen.component';
+import {
+  addListItem,
+  markListItemDone,
+  markListItemInactive,
+} from '../../utils/firebase/firestore-org.utils';
 
 function D2d2() {
   //context
-  const {
-    userName,
-    uid,
-    listItemsDone,
-    sendToDone,
-    removeListItem,
-    removeDoneItem,
-    addList,
-    removeList,
-  } = useContext(UsersContext);
+  const { userName, uid, addList, removeList } = useContext(UsersContext);
 
-  const { orgId, updateOrgId } = useContext(OrgContext);
+  const { orgId } = useContext(OrgContext);
 
   const [loading, setLoading] = useState(true);
 
-  //Database
+  const [error, setError] = useState(false);
+
+  //Firestore Realtime////////////////////////////////////////////
 
   const db = getFirestore();
 
@@ -50,24 +44,35 @@ function D2d2() {
   const [listTypes, listTypeLoading, listTypeError] =
     useCollectionData(listTypesQuery);
 
-  console.log(listTypes);
-
   //get Lists
-
   const listsQuery = uid ? query(collection(db, 'org', orgId, 'lists')) : null;
 
   const [lists, listsLoading, listsError] = useCollectionData(listsQuery);
 
-  console.log(lists);
-
   // get ListItems
   const listItemsQuery = uid
-    ? query(collection(db, 'org', orgId, 'listItems'))
+    ? query(
+        collection(db, 'org', orgId, 'listItems'),
+        where('active', '==', true)
+      )
     : null;
   const [listItems, listsItemsLoading, listsItemsError] =
     useCollectionData(listItemsQuery);
 
-  console.log(listItems);
+  const listItemsDone = listItems?.filter(({ done }) => done === true);
+
+  useEffect(() => {
+    if (listTypeLoading && listsLoading && listsItemsLoading) {
+      setLoading(true);
+    } else setLoading(false);
+  }, [listTypeLoading, listsLoading, listsItemsLoading]);
+
+  useEffect(() => {
+    if (listTypeError || listsError || listsItemsError) {
+      setError(true);
+    } else setError(false);
+  }, [listTypeError, listsError, listsItemsError]);
+  ///////////////////////////////////////////////////////////////////////////////////////////
   // Modals
 
   const [manageListsPopupStatus, setManageListsPopupStatus] = useState(false);
@@ -76,22 +81,22 @@ function D2d2() {
     setManageListsPopupStatus((old) => !old);
   };
 
-  //lists.length !== 0
-
-  // Map Types
+  //MAPS///////////////////////////////////////////////////////////////////
+  //Types
   const listTypeMap =
     !loading &&
-    listTypes &&
     lists &&
-    listTypes.map((type) => {
-      //Lists Map
+    listTypes?.map((type) => {
+      //Lists
       const listMap = lists.map((list) => {
         const listItemArray = listItems?.filter(
-          ({ listId, listTypeId }) =>
-            listId === list.listId && listTypeId === type.listTypeId
+          ({ listId, listTypeId, done }) =>
+            listId === list.listId &&
+            listTypeId === type.listTypeId &&
+            done === false
         );
 
-        const addListItemHandler = (listItem, listId, listTypeId) => {
+        const addListItemHandler = (listItem) => {
           addListItem(
             listItem,
             uid,
@@ -105,8 +110,8 @@ function D2d2() {
         const listObj = {
           arr: listItemArray,
           addToArray: addListItemHandler, //Add Item
-          removeFromArray: removeListItem, //Delete
-          sendToDone: sendToDone, // Move Item from sub array to main array
+          removeFromArray: markListItemInactive, //Delete
+          sendToDone: markListItemDone, // Move Item from sub array to main array
           addToArrayVis: true,
           removeFromArrayVis: true,
           sendToDoneVis: true,
@@ -134,7 +139,9 @@ function D2d2() {
     listId: list.listId,
     listName: list.list,
   }));
+  /////////////////////////////////////////////////////////////////////////////////////////////
 
+  //
   const manageListsObj = {
     arr: listsMap,
     addToArray: addList, //Add Item
@@ -148,13 +155,8 @@ function D2d2() {
     },
   };
 
-  useEffect(() => {
-    if (listTypeLoading && listsLoading && listsItemsLoading) {
-      setLoading(true);
-    } else setLoading(false);
-  }, [listTypeLoading, listsLoading, listsItemsLoading]);
   //App return
-
+  if (error) return <p>error retrieving data</p>;
   if (loading) return <LoadingScreen />;
 
   return (
@@ -199,7 +201,7 @@ function D2d2() {
           <List
             listObject={{
               arr: listItemsDone,
-              removeFromArray: removeDoneItem,
+              removeFromArray: markListItemInactive,
               addToArrayVis: false,
               sendToDoneVis: false,
             }}

@@ -1,44 +1,57 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect, useContext } from 'react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import autoAnimate from '@formkit/auto-animate';
 
 import ListItem from './list-item.component';
+
+import { OrgContext } from '../context/org.context';
+
 const List = ({ listObject, listLabel }) => {
   /*listObject Rules new
  {
     arr: [],
     addToArray: () => {alert("add to array")}, //Add Item
-    removeFromArray: () => {alert("remove from array")}, //Delete
-    sendToDone: () => {alert("Mark as done")}, // Move Item from main array to sub array
+    removeFromArray: removeFromArray(orgId, listItemId), //Delete
+    sendToDone: () => sendToDone(orgId, listItemId), // Move Item from main array to sub array
     addToArrayVis: true,
     removeFromArrayVis: true,
     sentToDoneVis: true,
   }
   */
 
+  //Destructuring object received in props
   const {
     arr = [],
     addToArray = () => {
       alert('add to array');
-    }, //Add Item
+    },
     removeFromArray = () => {
       alert('remove from array');
-    }, //Delete
+    },
     sendToDone = () => {
       alert('Mark as done');
-    }, // Move Item from main array to sub array
+    },
     addToArrayVis = true,
     removeFromArrayVis = true,
     sendToDoneVis = true,
-    dna = {
-      listId: '',
-      typeId: '',
-    },
   } = listObject;
 
+  //Context///////////////////////////////////////////////////////////////////
+  const { orgId } = useContext(OrgContext);
+  //Local States//////////////////////////////////////////////////////////////
   const [inputState, setInputState] = useState('');
+
+  //State Handlers
+  const textHandler = (event) => setInputState(event.target.value);
+
+  const submitHandler = (event) => {
+    event.preventDefault();
+    addToArray(inputState);
+    setInputState('');
+  };
+  ////////////////////////////////////////////////////////////////////////////
 
   //--------Animation-----------
   const parentRef = useRef();
@@ -50,28 +63,23 @@ const List = ({ listObject, listLabel }) => {
   }, [parentRef]);
   //---------------------------------
 
+  //Maps////////////////////////////////////////////////////////
+  //Map of array received in the list object
   const mainArr = arr.map(({ listItemId, listItem }) => {
     return (
       <ListItem
         id={listItemId}
         key={listItemId}
         value={listItem}
-        removeFromArray={() => removeFromArray(listItemId)}
-        sendToDone={() => sendToDone(listItemId)}
+        removeFromArray={() => removeFromArray(orgId, listItemId)}
+        sendToDone={() => sendToDone(orgId, listItemId)}
         removeFromArrayVis={removeFromArrayVis}
         sendToDoneVis={sendToDoneVis}
       />
     );
   });
 
-  const textHandler = (event) => setInputState(event.target.value);
-
-  const submitHandler = (event) => {
-    event.preventDefault();
-    addToArray(inputState, dna);
-    setInputState('');
-  };
-
+  //Component Return//////////////////////////////////////////////////////
   return (
     <div className="box block container">
       {listLabel && (

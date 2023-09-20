@@ -33,7 +33,7 @@ const Navigation = () => {
 
   useEffect(() => {
     user ? setUser(user.uid, user.displayName) : setUser(null, null);
-  }, [user]);
+  }, [user, setUser]);
 
   if (loading) {
     return <LoadingScreen />;

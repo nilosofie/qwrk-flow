@@ -4,19 +4,13 @@ import {
   getDoc,
   setDoc,
   updateDoc,
-  collection,
-  getCollection,
-  getDocs,
-  query,
-  where,
-  addDoc,
 } from 'firebase/firestore';
 
-//import { ref, getDatabase } from 'firebase/database';
 import { nanoid } from 'nanoid';
 
-export const db = getFirestore(); //users
+export const db = getFirestore();
 
+//Create a new Org Document in Firestore
 export const createOrgDocument = async (orgName = 'Unnamed Org', uid) => {
   const newOrgID = nanoid();
   const createdAt = new Date();
@@ -34,12 +28,12 @@ export const createOrgDocument = async (orgName = 'Unnamed Org', uid) => {
     console.log('error creating the user', error.message);
   }
 
-  createDefaultListTypes(newOrgID);
-  createDefaultList(newOrgID, orgName);
+  createDefaults(newOrgID, orgName);
 
   return orgDocRef;
 };
 
+//Create a user Org document in firestore
 export const createUserOrgDocument = async (userName = 'User', uid) => {
   const orgDocRef = doc(db, 'org', uid);
   const userOrgSnapshot = await getDoc(orgDocRef);
@@ -55,8 +49,7 @@ export const createUserOrgDocument = async (userName = 'User', uid) => {
         active: true,
       });
 
-      createDefaultListTypes(uid);
-      createDefaultList(uid, userName);
+      createDefaults(uid, userName);
     } catch (error) {
       console.log('error creating the user', error.message);
     }
@@ -65,7 +58,7 @@ export const createUserOrgDocument = async (userName = 'User', uid) => {
   return orgDocRef;
 };
 
-// List Types
+//Create List Types
 export const createListType = async (
   orgId,
   listType = 'Unnamed List Type',
@@ -86,13 +79,8 @@ export const createListType = async (
 
   return listTypeColRef;
 };
-const createDefaultListTypes = (orgId) => {
-  createListType(orgId, 'Once-Off (Actions)');
-  createListType(orgId, 'Follow-Up');
-  createListType(orgId, 'Recurring');
-};
 
-//Lists
+//Create a List
 export const createList = async (
   orgId,
   list = 'Unnamed List',
@@ -114,33 +102,15 @@ export const createList = async (
   return listColRef;
 };
 
-const createDefaultList = (orgId, orgName) => {
+//Create default entries when creating an org
+const createDefaults = (orgId, orgName) => {
   createList(orgId, orgName, orgId);
+  createListType(orgId, 'Once-Off (Actions)');
+  createListType(orgId, 'Follow-Up');
+  createListType(orgId, 'Recurring');
 };
 
-// export const createTemp = async (userName = 'User', uid) => {
-//   const orgDocRef = doc(db, 'org', uid);
-//   const userOrgSnapshot = await getDoc(orgDocRef);
-
-//   if (!userOrgSnapshot.exists()) {
-//     const createdAt = new Date();
-//     try {
-//       await setDoc(orgDocRef, {
-//         orgName: userName,
-//         orgId: uid,
-//         users: [],
-//         createdAt: createdAt,
-//         active: true,
-//       });
-//     } catch (error) {
-//       console.log('error creating the user', error.message);
-//     }
-//   }
-
-//   return orgDocRef;
-// };
-
-//Notes updating for org
+//Update notes
 export const updateNote = async (uid, orgId, note) => {
   const updatededAt = new Date();
   if (uid) {
@@ -154,6 +124,7 @@ export const updateNote = async (uid, orgId, note) => {
   }
 };
 
+//Add a listItem
 export const addListItem = async (
   listItem,
   uid,
@@ -162,13 +133,6 @@ export const addListItem = async (
   listTypeId,
   listItemId = nanoid()
 ) => {
-  console.log('ListItem: ', listItem);
-  console.log('uid: ', uid);
-  console.log('orgId: ', orgId);
-  console.log('listId: ', listId);
-  console.log('listtypeId: ', listTypeId);
-  console.log('listItemId: ', listItemId);
-
   const createdAt = new Date();
 
   if (orgId) {
@@ -181,29 +145,24 @@ export const addListItem = async (
       listId,
       listTypeId,
       listItemId,
+      done: false,
+      active: true,
     });
   }
 };
 
-//users
-export const updateListItems = async (uid, listItems) => {
-  if (uid) {
-    const userRef = doc(db, 'users', uid);
-    await updateDoc(userRef, { 'd2dData.listitems': listItems });
+//Mark a created listItem as done
+export const markListItemDone = async (orgId, listItemId) => {
+  if (orgId) {
+    const listItemRef = doc(db, 'org', orgId, 'listItems', listItemId);
+    await updateDoc(listItemRef, { done: true });
   }
 };
 
-export const updateListItemsDone = async (uid, listItemsDone) => {
-  if (uid) {
-    const userRef = doc(db, 'users', uid);
-    await updateDoc(userRef, { 'd2dData.listitemsdone': listItemsDone });
-  }
-};
-
-//users
-export const updateLists = async (uid, lists) => {
-  if (uid) {
-    const userRef = doc(db, 'users', uid);
-    await updateDoc(userRef, { 'd2dData.lists': lists });
+//Mark a created listItem as Inactive
+export const markListItemInactive = async (orgId, listItemId) => {
+  if (orgId) {
+    const listItemRef = doc(db, 'org', orgId, 'listItems', listItemId);
+    await updateDoc(listItemRef, { active: false });
   }
 };

@@ -84,17 +84,13 @@ const Home = () => {
   };
   //Maps----------------------------------------------------------------------------------------
 
-  const orgsMap = orgs ? (
-    orgs.map((org) => (
-      <div className="column is-half" key={org.orgId}>
-        <ClickCard icon={faSitemap} onClick={() => orgSelect(org.orgId)}>
-          {org.orgName}
-        </ClickCard>
-      </div>
-    ))
-  ) : (
-    <div>Nothing to show</div>
-  );
+  const orgsMap = orgs?.map((org) => (
+    <div className="column is-half" key={org.orgId}>
+      <ClickCard icon={faSitemap} onClick={() => orgSelect(org.orgId)}>
+        {org.orgName}
+      </ClickCard>
+    </div>
+  ));
 
   //Return-----------------------------------------------------------------------------------------
 
