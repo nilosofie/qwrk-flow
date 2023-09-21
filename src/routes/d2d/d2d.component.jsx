@@ -1,38 +1,79 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 
 import 'bulma/css/bulma.min.css';
-
 import '../../mystyles.scss';
 
-import Notes from '../../components/notes.component';
+import { query, collection, getFirestore, where } from 'firebase/firestore';
+import { useCollectionData } from 'react-firebase-hooks/firestore';
+import { nanoid } from 'nanoid';
 
+import Notes from '../../components/notes.component';
 import List from '../../components/list.component';
 import ManageLists from '../../components/manage-lists.component';
 import Popup from '../../components/popup.component';
 import TitleSection from '../../components/tile-section.component';
+import LoadingScreen from '../../components/loading-screen/loading-screen.component';
 
 import { UsersContext } from '../../context/users.context';
 import { OrgContext } from '../../context/org.context';
+import {
+  addListItem,
+  markListItemDone,
+  markListItemInactive,
+} from '../../utils/firebase/firestore-org.utils';
 
 function D2d() {
   //context
-  const {
-    userName,
-    listTypes,
-    lists,
-    listItems,
-    listItemsDone,
-    addListItem,
-    sendToDone,
-    removeListItem,
-    removeDoneItem,
-    sendNoteToFS,
-    noteStatus,
-    addList,
-    removeList,
-  } = useContext(UsersContext);
+  const { userName, uid, addList, removeList } = useContext(UsersContext);
 
   const { orgId } = useContext(OrgContext);
+
+  const [loading, setLoading] = useState(true);
+
+  const [error, setError] = useState(false);
+
+  //Firestore Realtime////////////////////////////////////////////
+
+  const db = getFirestore();
+
+  //get ListTypes
+  const listTypesQuery = uid
+    ? query(collection(db, 'org', orgId, 'listTypes'))
+    : null;
+
+  const [listTypes, listTypeLoading, listTypeError] =
+    useCollectionData(listTypesQuery);
+
+  //get Lists
+  const listsQuery = uid ? query(collection(db, 'org', orgId, 'lists')) : null;
+
+  const [lists, listsLoading, listsError] = useCollectionData(listsQuery);
+
+  // get ListItems
+  const listItemsQuery = uid
+    ? query(
+        collection(db, 'org', orgId, 'listItems'),
+        where('active', '==', true)
+      )
+    : null;
+  const [listItems, listsItemsLoading, listsItemsError] =
+    useCollectionData(listItemsQuery);
+
+  const listItemsDone = listItems?.filter(({ done }) => done === true);
+
+  useEffect(() => {
+    if (listTypeLoading && listsLoading && listsItemsLoading) {
+      setLoading(true);
+    } else setLoading(false);
+  }, [listTypeLoading, listsLoading, listsItemsLoading]);
+
+  useEffect(() => {
+    if (listTypeError || listsError || listsItemsError) {
+      setError(true);
+    } else setError(false);
+  }, [listTypeError, listsError, listsItemsError]);
+  ///////////////////////////////////////////////////////////////////////////////////////////
+  // Modals
 
   const [manageListsPopupStatus, setManageListsPopupStatus] = useState(false);
 
@@ -40,51 +81,67 @@ function D2d() {
     setManageListsPopupStatus((old) => !old);
   };
 
-  // Map Types
+  //MAPS///////////////////////////////////////////////////////////////////
+  //Types
   const listTypeMap =
-    listTypes &&
-    lists.length !== 0 &&
-    listTypes.map((type) => {
-      //Lists Map
+    !loading &&
+    lists &&
+    listTypes?.map((type) => {
+      //Lists
       const listMap = lists.map((list) => {
-        const listItemArray = listItems.filter(
-          ({ listId, typeId }) =>
-            listId === list.listId && typeId === type.typeId
+        const listItemArray = listItems?.filter(
+          ({ listId, listTypeId, done }) =>
+            listId === list.listId &&
+            listTypeId === type.listTypeId &&
+            done === false
         );
+
+        const addListItemHandler = (listItem) => {
+          addListItem(
+            listItem,
+            uid,
+            orgId,
+            list.listId,
+            type.listTypeId,
+            nanoid()
+          );
+        };
 
         const listObj = {
           arr: listItemArray,
-          addToArray: addListItem, //Add Item
-          removeFromArray: removeListItem, //Delete
-          sendToDone: sendToDone, // Move Item from sub array to main array
+          addToArray: addListItemHandler, //Add Item
+          removeFromArray: markListItemInactive, //Delete
+          sendToDone: markListItemDone, // Move Item from sub array to main array
           addToArrayVis: true,
           removeFromArrayVis: true,
           sendToDoneVis: true,
           dna: {
             listId: list.listId,
-            typeId: type.typeId,
+            typeId: type.listTypeId,
           },
         };
         return (
           <div className="block" key={list.listId}>
-            <List listObject={listObj} listLabel={list.listName} />
+            <List listObject={listObj} listLabel={list.list} />
           </div>
         );
       });
 
       return (
         <div className="column is-half" key={type.typeId}>
-          <TitleSection title={type.typeName}>{listMap}</TitleSection>
+          <TitleSection title={type.listType}>{listMap}</TitleSection>
         </div>
       );
     });
 
   //list map to be moved
-  const listsMap = lists.map((list) => ({
+  const listsMap = lists?.map((list) => ({
     listId: list.listId,
-    listName: list.listName,
+    listName: list.list,
   }));
+  /////////////////////////////////////////////////////////////////////////////////////////////
 
+  //
   const manageListsObj = {
     arr: listsMap,
     addToArray: addList, //Add Item
@@ -97,7 +154,11 @@ function D2d() {
       typeId: '',
     },
   };
+
   //App return
+  if (error) return <p>error retrieving data</p>;
+  if (loading) return <LoadingScreen />;
+
   return (
     <div className="App hero is-fullheight">
       <br />
@@ -109,15 +170,6 @@ function D2d() {
           <div className="column is-half">
             <TitleSection title={'Notes'}>
               <Notes />
-              <br />
-              <button
-                type="button"
-                onClick={() => sendNoteToFS()}
-                className="button is-fullwidth is-info"
-                disabled={!noteStatus}
-              >
-                {!noteStatus ? 'Saved' : 'Changes not saved'}
-              </button>
             </TitleSection>
             <div className="container">
               <button
@@ -149,7 +201,7 @@ function D2d() {
           <List
             listObject={{
               arr: listItemsDone,
-              removeFromArray: removeDoneItem,
+              removeFromArray: markListItemInactive,
               addToArrayVis: false,
               sendToDoneVis: false,
             }}

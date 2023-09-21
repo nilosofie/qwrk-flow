@@ -76,11 +76,11 @@ const Navigation = () => {
               <h1>D2D</h1>
             </Link>
             <Link
-              to="/d2d2"
+              to="/org-wiz"
               className="navbar-item"
               onClick={() => setNavBurgerStatus(false)}
             >
-              <h1>D2D2</h1>
+              <h1>Org-Wiz</h1>
             </Link>
             {user ? (
               <Link type className="navbar-item" onClick={signOutUser}>

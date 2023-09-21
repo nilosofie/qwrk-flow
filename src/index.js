@@ -6,6 +6,8 @@ import App from './App';
 //import reportWebVitals from './reportWebVitals';
 import { UsersProvider } from './context/users.context';
 import { OrgProvider } from './context/org.context';
+import { OrgTreeProvider } from './context/org-tree.context';
+import { WizStepCountProvider } from './context/wiz-step-count.context';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -13,7 +15,11 @@ root.render(
     <BrowserRouter>
       <UsersProvider>
         <OrgProvider>
-          <App />
+          <WizStepCountProvider>
+            <OrgTreeProvider>
+              <App />
+            </OrgTreeProvider>
+          </WizStepCountProvider>
         </OrgProvider>
       </UsersProvider>
     </BrowserRouter>
