@@ -7,6 +7,8 @@ import 'bulma/css/bulma.min.css';
 //import "./mystyles2.scss";
 
 //import './mystyles.scss'; FIX
+
+import '../../mystyles.scss';
 import logo from '../../assets/Qwrk Embleem Pakkie sb 130423 v1.png';
 //Pages
 
