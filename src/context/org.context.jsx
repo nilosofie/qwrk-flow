@@ -7,6 +7,7 @@ import { useDocument, useDocumentData } from 'react-firebase-hooks/firestore';
 import { updateNote } from '../utils/firebase/firestore-org.utils';
 
 import { UsersContext } from './users.context';
+import { async } from '@dabeng/react-orgchart';
 
 export const OrgContext = createContext({
   orgState: false,
@@ -52,9 +53,12 @@ export const OrgProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    orgId ? setOrgState(true) : setOrgState(false);
-    org && setOrgName(org.data().orgName);
-  }, [orgLoading]);
+    (async () => {
+      const localOrgName = await org?.data().orgName;
+      orgId ? setOrgState(true) : setOrgState(false);
+      org && setOrgName(localOrgName);
+    })();
+  }, [orgId, org]);
 
   const value = {
     orgId,

@@ -26,6 +26,17 @@ export const OrgTreeProvider = ({ children }) => {
       : alert('Please add a action');
   };
 
+  /*
+  add to action list - Add Doc to collection
+
+  remove from action list - change active status to false
+
+  
+
+
+
+  */
+
   const removeFromActionList = (id) => {
     let newArr = actionList.filter((obj) => obj.id !== id);
     setActionList(newArr);

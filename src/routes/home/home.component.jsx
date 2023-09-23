@@ -23,6 +23,8 @@ import {
 import Popup from '../../components/popup.component';
 import ClickCard from '../../components/click-card.component';
 import LoadingScreen from '../../components/loading-screen/loading-screen.component';
+import OrgEditor from '../../components/org-editor.component';
+import { async } from '@dabeng/react-orgchart';
 
 const Home = () => {
   //Context-----------------------------------------------------------------------------------
@@ -53,6 +55,11 @@ const Home = () => {
     setNewOrgName('');
   };
 
+  const [orgEditorPop, setOrgEditorPop] = useState(false);
+  const toggleOrgEditorPop = () => {
+    setOrgEditorPop((oldStatus) => !oldStatus);
+  };
+
   //Create Org--------------------------------------------------------------------------------------------
 
   const [newOrgName, setNewOrgName] = useState('');
@@ -64,10 +71,11 @@ const Home = () => {
     toggeleOrgNamePop();
   };
 
-  const createOrgSubmitHandler = (event) => {
+  const createOrgSubmitHandler = async (event) => {
     event.preventDefault();
-    createOrgDocument(newOrgName, uid);
-    createOrgPopupHandler();
+    updateOrgId(await createOrgDocument(newOrgName, uid));
+    toggeleOrgNamePop();
+    toggleOrgEditorPop();
   };
 
   //Select Org-------------------------------------------------------------------------------
@@ -166,6 +174,9 @@ const Home = () => {
           </div>
         </form>
       </Popup>
+      {/*<Popup trigger={orgEditorPop} closePopup={toggleOrgEditorPop}>
+        {OrgEditor}
+            </Popup>*/}
     </div>
   );
 };

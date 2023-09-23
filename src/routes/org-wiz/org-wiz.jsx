@@ -28,6 +28,8 @@ const OrgWiz = () => {
   //buckets
 
   const { bucketList, treeView } = useContext(OrgTreeContext);
+  console.log('Bucketlist: ', bucketList);
+  console.log('Treeview Bucketlist: ', treeView(bucketList));
 
   return (
     <div className="App main container">
