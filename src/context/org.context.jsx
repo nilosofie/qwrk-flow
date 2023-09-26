@@ -1,19 +1,18 @@
-import { createContext, useState, useEffect, useContext } from 'react';
+import { createContext, useState, useEffect, useContext } from "react";
 
-import { query, getFirestore, doc } from 'firebase/firestore';
+import { query, getFirestore, doc } from "firebase/firestore";
 
-import { useDocument, useDocumentData } from 'react-firebase-hooks/firestore';
+import { useDocument, useDocumentData } from "react-firebase-hooks/firestore";
 
-import { updateNote } from '../utils/firebase/firestore-org.utils';
+import { updateNote } from "../utils/firebase/firestore-org.utils";
 
-import { UsersContext } from './users.context';
-import { async } from '@dabeng/react-orgchart';
+import { UsersContext } from "./users.context";
 
 export const OrgContext = createContext({
   orgState: false,
-  orgId: '',
+  orgId: "",
   updateOrgId: () => {},
-  orgName: '',
+  orgName: "",
   notesObj: {},
   saveNote: () => {},
 });
@@ -25,8 +24,8 @@ export const OrgProvider = ({ children }) => {
 
   //states
   const [orgState, setOrgState] = useState(false);
-  const [orgId, setOrgId] = useState('');
-  const [orgName, setOrgName] = useState('');
+  const [orgId, setOrgId] = useState("");
+  const [orgName, setOrgName] = useState("");
 
   //Database
 
@@ -54,9 +53,9 @@ export const OrgProvider = ({ children }) => {
 
   useEffect(() => {
     (async () => {
-      const localOrgName = await org?.data().orgName;
+      //const localOrgName = await org.data().orgName;
       orgId ? setOrgState(true) : setOrgState(false);
-      org && setOrgName(localOrgName);
+      org && setOrgName(await org.data().orgName);
     })();
   }, [orgId, org]);
 

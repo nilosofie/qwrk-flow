@@ -1,23 +1,23 @@
-import { useState, useContext, useEffect } from 'react';
+import { useState, useContext, useEffect } from "react";
 
-import { Outlet, Link } from 'react-router-dom';
+import { Outlet, Link } from "react-router-dom";
 
-import { signOutUser } from '../../utils/firebase/firebase.utils';
+import { signOutUser } from "../../utils/firebase/firebase.utils";
 
-import SignIn from '../sign-in/sign-in.component';
+import SignIn from "../sign-in/sign-in.component";
 
-import LoadingScreen from '../../components/loading-screen/loading-screen.component';
+import LoadingScreen from "../../components/loading-screen/loading-screen.component";
 
-import MainLogo from '../../assets/Qwrk Embleem Pakkie sb 130423 v1.png';
+import MainLogo from "../../assets/Qwrk Embleem Pakkie sb 130423 v1.png";
 
-import { auth } from '../../utils/firebase/firebase.utils';
+import { auth } from "../../utils/firebase/firebase.utils";
 
-import { useAuthState } from 'react-firebase-hooks/auth';
+import { useAuthState } from "react-firebase-hooks/auth";
 
-import { UsersContext } from '../../context/users.context';
+import { UsersContext } from "../../context/users.context";
 
-import { OrgContext } from '../../context/org.context';
-import Home from '../home/home.component';
+import { OrgContext } from "../../context/org.context";
+import Home from "../home/home.component";
 
 const Navigation = () => {
   const { setUser } = useContext(UsersContext);
@@ -55,7 +55,7 @@ const Navigation = () => {
             <img src={MainLogo} width="100" alt="qwrk logo" />
           </Link>
           <button
-            className={`navbar-burger ${navBurgerStatus && 'is-active'}`}
+            className={`navbar-burger ${navBurgerStatus && "is-active"}`}
             aria-label="menu"
             aria-expanded="true"
             data-target="navbarBasicExample"
@@ -66,7 +66,7 @@ const Navigation = () => {
             <span aria-hidden="true"></span>
           </button>
         </div>
-        <div className={`navbar-menu ${navBurgerStatus && 'is-active'}`}>
+        <div className={`navbar-menu ${navBurgerStatus && "is-active"}`}>
           <div className="navbar-end">
             <Link
               to="/d2d"
@@ -81,6 +81,13 @@ const Navigation = () => {
               onClick={() => setNavBurgerStatus(false)}
             >
               <h1>Org-Wiz</h1>
+            </Link>
+            <Link
+              to="/org-settings"
+              className="navbar-item"
+              onClick={() => setNavBurgerStatus(false)}
+            >
+              <h1>Organization Settings</h1>
             </Link>
             {user ? (
               <Link type className="navbar-item" onClick={signOutUser}>

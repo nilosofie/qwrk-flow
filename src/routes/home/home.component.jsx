@@ -1,30 +1,28 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState } from "react";
 
-import { query, collection, getFirestore, where } from 'firebase/firestore';
+import { query, collection, getFirestore, where } from "firebase/firestore";
 
-import { useCollectionData } from 'react-firebase-hooks/firestore';
+import { useCollectionData } from "react-firebase-hooks/firestore";
 
 import {
   createOrgDocument,
   createUserOrgDocument,
-} from '../../utils/firebase/firestore-org.utils';
+} from "../../utils/firebase/firestore-org.utils";
 
-import { UsersContext } from '../../context/users.context';
+import { UsersContext } from "../../context/users.context";
 
-import { OrgContext } from '../../context/org.context';
+import { OrgContext } from "../../context/org.context";
 
 import {
   faBriefcase,
   faUsers,
   faUser,
   faSitemap,
-} from '@fortawesome/free-solid-svg-icons';
+} from "@fortawesome/free-solid-svg-icons";
 
-import Popup from '../../components/popup.component';
-import ClickCard from '../../components/click-card.component';
-import LoadingScreen from '../../components/loading-screen/loading-screen.component';
-import OrgEditor from '../../components/org-editor.component';
-import { async } from '@dabeng/react-orgchart';
+import Popup from "../../components/popup.component";
+import ClickCard from "../../components/click-card.component";
+import LoadingScreen from "../../components/loading-screen/loading-screen.component";
 
 const Home = () => {
   //Context-----------------------------------------------------------------------------------
@@ -37,7 +35,7 @@ const Home = () => {
   const db = getFirestore();
 
   const orgsQuery = uid
-    ? query(collection(db, 'org'), where('users', 'array-contains', uid))
+    ? query(collection(db, "org"), where("users", "array-contains", uid))
     : null;
 
   const [orgs, loading] = useCollectionData(orgsQuery);
@@ -52,17 +50,12 @@ const Home = () => {
   const [orgNamePop, setOrgNamePop] = useState(false);
   const toggeleOrgNamePop = () => {
     setOrgNamePop((oldStatus) => !oldStatus);
-    setNewOrgName('');
-  };
-
-  const [orgEditorPop, setOrgEditorPop] = useState(false);
-  const toggleOrgEditorPop = () => {
-    setOrgEditorPop((oldStatus) => !oldStatus);
+    setNewOrgName("");
   };
 
   //Create Org--------------------------------------------------------------------------------------------
 
-  const [newOrgName, setNewOrgName] = useState('');
+  const [newOrgName, setNewOrgName] = useState("");
 
   const orgNameTextHandler = (e) => setNewOrgName(e.target.value);
 
@@ -73,9 +66,9 @@ const Home = () => {
 
   const createOrgSubmitHandler = async (event) => {
     event.preventDefault();
-    updateOrgId(await createOrgDocument(newOrgName, uid));
-    toggeleOrgNamePop();
-    toggleOrgEditorPop();
+    await createOrgDocument(newOrgName, uid);
+
+    createOrgPopupHandler();
   };
 
   //Select Org-------------------------------------------------------------------------------
@@ -128,7 +121,7 @@ const Home = () => {
           <div className="column is-half">
             <ClickCard
               icon={faUsers}
-              onClick={() => console.log('roles clicked')}
+              onClick={() => console.log("roles clicked")}
             >
               <p>Select Role</p>
             </ClickCard>
