@@ -1,26 +1,32 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from "react";
 
-import 'bulma/css/bulma.min.css';
-import '../../mystyles.scss';
+import "bulma/css/bulma.min.css";
+import "../../mystyles.scss";
 
-import { query, collection, getFirestore, where } from 'firebase/firestore';
-import { useCollectionData } from 'react-firebase-hooks/firestore';
-import { nanoid } from 'nanoid';
+import {
+  query,
+  collection,
+  getFirestore,
+  where,
+  orderBy,
+} from "firebase/firestore";
+import { useCollectionData } from "react-firebase-hooks/firestore";
+import { nanoid } from "nanoid";
 
-import Notes from '../../components/notes.component';
-import List from '../../components/list.component';
-import ManageLists from '../../components/manage-lists.component';
-import Popup from '../../components/popup.component';
-import TitleSection from '../../components/tile-section.component';
-import LoadingScreen from '../../components/loading-screen/loading-screen.component';
+import Notes from "../../components/notes.component";
+import List from "../../components/list.component";
+import ManageLists from "../../components/manage-lists.component";
+import Popup from "../../components/popup.component";
+import TitleSection from "../../components/tile-section.component";
+import LoadingScreen from "../../components/loading-screen/loading-screen.component";
 
-import { UsersContext } from '../../context/users.context';
-import { OrgContext } from '../../context/org.context';
+import { UsersContext } from "../../context/users.context";
+import { OrgContext } from "../../context/org.context";
 import {
   addListItem,
   markListItemDone,
   markListItemInactive,
-} from '../../utils/firebase/firestore-org.utils';
+} from "../../utils/firebase/firestore-org.utils";
 
 function D2d() {
   //context
@@ -38,22 +44,24 @@ function D2d() {
 
   //get ListTypes
   const listTypesQuery = uid
-    ? query(collection(db, 'org', orgId, 'listTypes'))
+    ? query(collection(db, "org", orgId, "listTypes"))
     : null;
 
   const [listTypes, listTypeLoading, listTypeError] =
     useCollectionData(listTypesQuery);
 
   //get Lists
-  const listsQuery = uid ? query(collection(db, 'org', orgId, 'lists')) : null;
+  const listsQuery = uid
+    ? query(collection(db, "org", orgId, "lists"), orderBy("order"))
+    : null;
 
   const [lists, listsLoading, listsError] = useCollectionData(listsQuery);
 
   // get ListItems
   const listItemsQuery = uid
     ? query(
-        collection(db, 'org', orgId, 'listItems'),
-        where('active', '==', true)
+        collection(db, "org", orgId, "listItems"),
+        where("active", "==", true)
       )
     : null;
   const [listItems, listsItemsLoading, listsItemsError] =
@@ -150,8 +158,8 @@ function D2d() {
     removeFromArrayVis: true,
     sendToDoneVis: false,
     dna: {
-      listId: '',
-      typeId: '',
+      listId: "",
+      typeId: "",
     },
   };
 
@@ -168,7 +176,7 @@ function D2d() {
       <div className="container is-fluid">
         <div className=" columns is-variable is-8 is-multiline">
           <div className="column is-half">
-            <TitleSection title={'Notes'}>
+            <TitleSection title={"Notes"}>
               <Notes />
             </TitleSection>
             <div className="container">
@@ -197,7 +205,7 @@ function D2d() {
           {listTypeMap}
         </div>
         <br />
-        <TitleSection title={'Done'}>
+        <TitleSection title={"Done"}>
           <List
             listObject={{
               arr: listItemsDone,

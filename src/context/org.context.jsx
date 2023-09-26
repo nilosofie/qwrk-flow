@@ -52,12 +52,12 @@ export const OrgProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    (async () => {
-      //const localOrgName = await org.data().orgName;
+    (() => {
+      const localOrgName = org?.data().orgName;
       orgId ? setOrgState(true) : setOrgState(false);
-      org && setOrgName(await org.data().orgName);
+      org && setOrgName(localOrgName);
     })();
-  }, [orgId, org]);
+  }, [orgId, org, orgLoading]);
 
   const value = {
     orgId,
