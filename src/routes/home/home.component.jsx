@@ -38,7 +38,7 @@ const Home = () => {
     ? query(collection(db, "org"), where("users", "array-contains", uid))
     : null;
 
-  const [orgs, loading] = useCollectionData(orgsQuery);
+  const [orgs, loading, error] = useCollectionData(orgsQuery);
 
   //Popups------------------------------------------------------------------------------------------
 

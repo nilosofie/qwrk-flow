@@ -34,7 +34,7 @@ const OrgNode = ({ nodeData }) => {
     <>
       <div className="box">
         <div className="position">{nodeData.title}</div>
-        <div className="fullname">{nodeData.name}</div>
+        {/* <div className="fullname">{nodeData.name}</div> */}
         <div className="columns is-mobile is-variable is-1">
           <span className="column">
             <button
