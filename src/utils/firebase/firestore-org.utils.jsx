@@ -15,7 +15,7 @@ import { nanoid } from "nanoid";
 export const db = getFirestore();
 
 //Create a new Org Document in Firestore
-export const createOrgDocument = async (orgName = "Unnamed Org", uid) => {
+export const createOrgDocument = async (orgName = "Unnamed Org", userEmail) => {
   const newOrgID = nanoid();
   const createdAt = new Date();
   const orgDocRef = doc(db, "org", newOrgID);
@@ -24,22 +24,23 @@ export const createOrgDocument = async (orgName = "Unnamed Org", uid) => {
     await setDoc(orgDocRef, {
       orgName: orgName,
       orgId: newOrgID,
-      users: [uid],
+      users: [userEmail],
       createdAt: createdAt,
       active: true,
+      owner: userEmail,
     });
   } catch (error) {
     console.log("error creating the user", error.message);
   }
 
-  createDefaults(newOrgID, orgName);
+  createDefaults(newOrgID, orgName, userEmail);
 
   return orgDocRef;
 };
 
 //Create a user Org document in firestore
-export const createUserOrgDocument = async (userName = "User", uid) => {
-  const orgDocRef = doc(db, "org", uid);
+export const createUserOrgDocument = async (userName = "User", userEmail) => {
+  const orgDocRef = doc(db, "org", userEmail);
   const userOrgSnapshot = await getDoc(orgDocRef);
 
   if (!userOrgSnapshot.exists()) {
@@ -47,13 +48,14 @@ export const createUserOrgDocument = async (userName = "User", uid) => {
     try {
       await setDoc(orgDocRef, {
         orgName: userName,
-        orgId: uid,
+        orgId: userEmail,
         users: [],
         createdAt: createdAt,
         active: true,
+        owner: userEmail,
       });
 
-      createDefaults(uid, userName);
+      createDefaults(userEmail, userName, userEmail);
     } catch (error) {
       console.log("error creating the user", error.message);
     }
@@ -89,7 +91,8 @@ export const createList = async (
   orgId,
   list = "Unnamed List",
   parentId,
-  listId = nanoid()
+  listId = nanoid(),
+  users = []
 ) => {
   //get count
   const colCountRef = collection(db, "org", orgId, "lists");
@@ -107,6 +110,8 @@ export const createList = async (
       active: true,
       parentId,
       order: listCount,
+      manager: "",
+      users,
     });
   } catch (error) {
     console.log("error creating the List", error.message);
@@ -116,8 +121,8 @@ export const createList = async (
 };
 
 //Create default entries when creating an org
-const createDefaults = (orgId, orgName) => {
-  createList(orgId, orgName, "0", orgId);
+const createDefaults = (orgId, orgName, userEmail) => {
+  createList(orgId, orgName, "0", orgId, [userEmail]);
   createListType(orgId, "Once-Off (Actions)");
   createListType(orgId, "Follow-Up");
   createListType(orgId, "Recurring");

@@ -28,7 +28,7 @@ import {
 
 function D2d() {
   //context
-  const { userName, uid } = useContext(UsersContext);
+  const { userName, uid, userEmail } = useContext(UsersContext);
 
   const { orgId } = useContext(OrgContext);
 
@@ -50,10 +50,15 @@ function D2d() {
 
   //get Lists
   const listsQuery = uid
-    ? query(collection(db, "org", orgId, "lists"), orderBy("order"))
+    ? query(
+        collection(db, "org", orgId, "lists"),
+        where("users", "array-contains", userEmail),
+        orderBy("order")
+      )
     : null;
 
   const [lists, listsLoading, listsError] = useCollectionData(listsQuery);
+  console.log(listsError);
 
   // get ListItems
   const listItemsQuery = uid

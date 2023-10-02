@@ -79,8 +79,8 @@ const Home = () => {
   };
 
   const userOrgSelect = () => {
-    createUserOrgDocument(userName, uid);
-    updateOrgId(uid);
+    createUserOrgDocument(userName, userEmail);
+    updateOrgId(userEmail);
     toggeleOrgPop();
   };
   //Maps----------------------------------------------------------------------------------------
