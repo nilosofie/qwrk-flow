@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import {
@@ -9,13 +9,55 @@ import {
   faBriefcase,
 } from "@fortawesome/free-solid-svg-icons";
 
+import {
+  addOrgUser,
+  removeOrgUser,
+} from "../../utils/firebase/firestore-org.utils";
+
 import ClickCard from "../../components/click-card.component";
+import Popup from "../../components/popup.component";
+import List from "../../components/list.component";
 
 import { OrgContext } from "../../context/org.context";
 
 function OrgSettings() {
-  const { orgName } = useContext(OrgContext);
+  const { orgName, orgUsers, orgId } = useContext(OrgContext);
   const navigate = useNavigate();
+
+  //Popups------------------------------------------------------------------------------------------
+  //Org Details
+  //Users
+  const [userPop, setUserPop] = useState(false);
+  const toggeleUserPop = () => {
+    setUserPop((oldStatus) => !oldStatus);
+  };
+
+  const addOrgUserHandler = (userEmail) => {
+    addOrgUser(orgId, userEmail);
+  };
+
+  const removeOrgUserHandler = (orgId, userEmail) => {
+    removeOrgUser(orgId, userEmail);
+  };
+
+  const orgUsersArr = orgUsers?.map((user) => ({
+    listItemId: user,
+    listItem: user,
+  }));
+
+  console.log(orgUsersArr);
+
+  const userListObj = {
+    arr: orgUsersArr,
+    addToArray: addOrgUserHandler, //Add Item
+    removeFromArray: removeOrgUserHandler, //Delete
+    addToArrayVis: true,
+    removeFromArrayVis: true,
+    sendToDoneVis: false,
+  };
+  //Modules
+  //Plans
+
   return (
     <div>
       <br />
@@ -54,7 +96,12 @@ function OrgSettings() {
             </ClickCard>
           </div>
           <div className="column is-one-third">
-            <ClickCard onClick={() => {}} icon={faUsers}>
+            <ClickCard
+              onClick={() => {
+                toggeleUserPop();
+              }}
+              icon={faUsers}
+            >
               <div>
                 <p>Add/Remove Users</p>
               </div>
@@ -76,6 +123,9 @@ function OrgSettings() {
           </div>
         </div>
       </div>
+      <Popup trigger={userPop} closePopup={toggeleUserPop}>
+        <List listObject={userListObj} />
+      </Popup>
     </div>
   );
 }

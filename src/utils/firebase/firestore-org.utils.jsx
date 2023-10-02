@@ -6,6 +6,8 @@ import {
   updateDoc,
   collection,
   getCountFromServer,
+  arrayUnion,
+  arrayRemove,
 } from "firebase/firestore";
 
 import { nanoid } from "nanoid";
@@ -175,5 +177,26 @@ export const markListItemInactive = async (orgId, listItemId) => {
   if (orgId) {
     const listItemRef = doc(db, "org", orgId, "listItems", listItemId);
     await updateDoc(listItemRef, { active: false });
+  }
+};
+
+export const addOrgUser = async (orgId, userEmail) => {
+  //const createdAt = new Date();
+
+  if (orgId) {
+    const orgItemRef = doc(db, `org/${orgId}`);
+    await updateDoc(orgItemRef, {
+      users: arrayUnion(userEmail),
+    });
+  }
+};
+
+export const removeOrgUser = async (orgId, userEmail) => {
+  //const createdAt = new Date();
+  if (orgId) {
+    const orgItemRef = doc(db, `org/${orgId}`);
+    await updateDoc(orgItemRef, {
+      users: arrayRemove(userEmail),
+    });
   }
 };

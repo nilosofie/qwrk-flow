@@ -35,26 +35,21 @@ function OrgEditor() {
       children: [],
     };
   });
-  console.log(listsMap);
 
   const listToTree = (list) => {
-    console.log("listToTree Fire", list);
     let map = {},
       node,
       roots = [],
       i;
 
     for (i = 0; i < list.length; i += 1) {
-      console.log("For 1 Fire ", i);
       map[list[i].id] = i; // initialize the map
       list[i].children = []; // initialize the children
     }
 
     for (i = 0; i < list.length; i += 1) {
-      console.log("For 2 fire ", i);
       node = list[i];
       if (node.parentId !== "0") {
-        console.log("If fire ", i);
         // if you have dangling branches check that map[node.parentId] exists
         list[map[node.parentId]].children.push(node);
       } else {

@@ -15,8 +15,6 @@ import { nanoid } from "nanoid";
 
 import Notes from "../../components/notes.component";
 import List from "../../components/list.component";
-import ManageLists from "../../components/manage-lists.component";
-import Popup from "../../components/popup.component";
 import TitleSection from "../../components/tile-section.component";
 import LoadingScreen from "../../components/loading-screen/loading-screen.component";
 
@@ -30,7 +28,7 @@ import {
 
 function D2d() {
   //context
-  const { userName, uid, addList, removeList } = useContext(UsersContext);
+  const { userName, uid } = useContext(UsersContext);
 
   const { orgId } = useContext(OrgContext);
 
@@ -81,13 +79,6 @@ function D2d() {
     } else setError(false);
   }, [listTypeError, listsError, listsItemsError]);
   ///////////////////////////////////////////////////////////////////////////////////////////
-  // Modals
-
-  const [manageListsPopupStatus, setManageListsPopupStatus] = useState(false);
-
-  const toggleManageListsPopupStatus = () => {
-    setManageListsPopupStatus((old) => !old);
-  };
 
   //MAPS///////////////////////////////////////////////////////////////////
   //Types
@@ -142,26 +133,7 @@ function D2d() {
       );
     });
 
-  //list map to be moved
-  const listsMap = lists?.map((list) => ({
-    listId: list.listId,
-    listName: list.list,
-  }));
   /////////////////////////////////////////////////////////////////////////////////////////////
-
-  //
-  const manageListsObj = {
-    arr: listsMap,
-    addToArray: addList, //Add Item
-    removeFromArray: removeList, //Delete
-    addToArrayVis: true,
-    removeFromArrayVis: true,
-    sendToDoneVis: false,
-    dna: {
-      listId: "",
-      typeId: "",
-    },
-  };
 
   //App return
   if (error) return <p>error retrieving data</p>;
@@ -179,28 +151,6 @@ function D2d() {
             <TitleSection title={"Notes"}>
               <Notes />
             </TitleSection>
-            <div className="container">
-              <button
-                type="button"
-                onClick={() => {
-                  toggleManageListsPopupStatus();
-                }}
-                className="button is-fullwidth is-info"
-              >
-                Manage Lists
-              </button>
-              <Popup
-                trigger={manageListsPopupStatus}
-                closePopup={() => {
-                  toggleManageListsPopupStatus();
-                }}
-              >
-                <ManageLists
-                  listObject={manageListsObj}
-                  listLabel="Manage Lists"
-                />
-              </Popup>
-            </div>
           </div>
           {listTypeMap}
         </div>

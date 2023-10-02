@@ -32,7 +32,9 @@ const Navigation = () => {
   const [user, loading, error] = useAuthState(auth);
 
   useEffect(() => {
-    user ? setUser(user.uid, user.displayName) : setUser(null, null);
+    user
+      ? setUser(user.uid, user.displayName, user.email)
+      : setUser(null, null);
   }, [user, setUser]);
 
   if (loading) {

@@ -1,8 +1,20 @@
 import { createContext, useState, useEffect, useContext } from "react";
 
-import { query, getFirestore, doc } from "firebase/firestore";
+import {
+  query,
+  getFirestore,
+  doc,
+  getDoc,
+  where,
+  collection,
+  documentId,
+} from "firebase/firestore";
 
-import { useDocument, useDocumentData } from "react-firebase-hooks/firestore";
+import {
+  useCollectionData,
+  useDocument,
+  useDocumentData,
+} from "react-firebase-hooks/firestore";
 
 import { updateNote } from "../utils/firebase/firestore-org.utils";
 
@@ -15,17 +27,19 @@ export const OrgContext = createContext({
   orgName: "",
   notesObj: {},
   saveNote: () => {},
+  orgUsers: [],
 });
 
 export const OrgProvider = ({ children }) => {
   //Context
 
-  const { uid, userName } = useContext(UsersContext);
+  const { uid, userName, userEmail } = useContext(UsersContext);
 
   //states
   const [orgState, setOrgState] = useState(false);
   const [orgId, setOrgId] = useState("");
   const [orgName, setOrgName] = useState("");
+  //const [orgUsers, setOrgUsers] = useState([]);
 
   //Database
 
@@ -43,8 +57,34 @@ export const OrgProvider = ({ children }) => {
     notesError,
   };
 
+  // const orgUserQuery = org?.data().users
+  //   ? query(collection(db, "users"), where("email", "in", org.data().users))
+  //   : null;
+
+  // const [regOrgUsers, regOrgUsersLoading] = useCollectionData(orgUserQuery);
+
+  // useEffect(() => {
+  //   if (!regOrgUsersLoading) {
+  //     org.data().users.forEach((element) => {
+  //       console.log(element);
+  //       console.log(regOrgUsers);
+  //       setOrgUsers((old) => {
+  //         const retArr = [...old];
+  //         retArr.push(element);
+  //         return retArr;
+  //       });
+  //       //setOrgUsers(regOrgUsers);
+  //     });
+  //   }
+  // }, [regOrgUsers]);
+
+  const orgUsers = org?.data().users;
+
+  //-------------------------------------------------------------------------
+
   const updateOrgId = (id) => {
     setOrgId(id);
+    //setOrgUsers([]);
   };
 
   const saveNote = (note) => {
@@ -66,6 +106,7 @@ export const OrgProvider = ({ children }) => {
     orgName,
     notesObj,
     saveNote,
+    orgUsers,
   };
   return <OrgContext.Provider value={value}>{children}</OrgContext.Provider>;
 };

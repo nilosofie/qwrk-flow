@@ -27,15 +27,15 @@ import LoadingScreen from "../../components/loading-screen/loading-screen.compon
 const Home = () => {
   //Context-----------------------------------------------------------------------------------
 
-  const { uid, userName } = useContext(UsersContext);
+  const { uid, userName, userEmail } = useContext(UsersContext);
 
-  const { orgName, updateOrgId, orgState } = useContext(OrgContext);
+  const { orgName, updateOrgId, orgState, orgUsers } = useContext(OrgContext);
 
   //Database-------------------------------------------------------------------------------------------
   const db = getFirestore();
 
   const orgsQuery = uid
-    ? query(collection(db, "org"), where("users", "array-contains", uid))
+    ? query(collection(db, "org"), where("users", "array-contains", userEmail))
     : null;
 
   const [orgs, loading, error] = useCollectionData(orgsQuery);
@@ -66,7 +66,7 @@ const Home = () => {
 
   const createOrgSubmitHandler = async (event) => {
     event.preventDefault();
-    await createOrgDocument(newOrgName, uid);
+    await createOrgDocument(newOrgName, userEmail);
 
     createOrgPopupHandler();
   };
@@ -98,14 +98,16 @@ const Home = () => {
   if (loading) return <LoadingScreen />;
 
   return (
-    <div className="hero is-primary is-fullheight">
-      <br />
-      <div className="hero-head block has-text-centered">
-        <p className="title">{`Hello, ${userName}`}</p>
-      </div>
+    <div>
       <br />
       <div className="container">
-        <div className="columns is-variable is-8 is-multiline">
+        <div className="hero">
+          <div className="container hero-head has-text-centered">
+            <p className="title">{`Hello, ${userName}`}</p>
+          </div>
+        </div>
+        <br />
+        <div className="columns is-multiline">
           <div className="column is-half">
             {orgState ? (
               <ClickCard icon={faSitemap} onClick={toggeleOrgPop}>
@@ -119,57 +121,51 @@ const Home = () => {
           </div>
 
           <div className="column is-half">
-            <ClickCard
-              icon={faUsers}
-              onClick={() => console.log("roles clicked")}
-            >
+            <ClickCard icon={faUsers} onClick={() => console.log("clicked")}>
               <p>Select Role</p>
             </ClickCard>
           </div>
         </div>
+        <Popup trigger={orgPop} closePopup={toggeleOrgPop}>
+          <div className="box has-background-grey-lighter">
+            <div className="columns is-multiline">
+              <div className="column is-half">
+                <ClickCard icon={faUser} onClick={userOrgSelect}>
+                  Personal
+                </ClickCard>
+              </div>
+              {orgsMap}
+              <div className="column is-half">
+                <ClickCard icon={faBriefcase} onClick={createOrgPopupHandler}>
+                  Create an Orginization
+                </ClickCard>
+              </div>
+            </div>
+          </div>
+        </Popup>
+        <Popup trigger={orgNamePop} closePopup={toggeleOrgNamePop}>
+          <form onSubmit={createOrgSubmitHandler} className="box">
+            <div className="field has-text-centered">
+              <div className="control">
+                <input
+                  className="input"
+                  type="text"
+                  placeholder="Orginization Name"
+                  value={newOrgName}
+                  onChange={orgNameTextHandler}
+                />
+              </div>
+            </div>
+            <div className="field has-text-centered">
+              <div className="control">
+                <button type="submit" className="button is-primary">
+                  Submit
+                </button>
+              </div>
+            </div>
+          </form>
+        </Popup>
       </div>
-      <Popup trigger={orgPop} closePopup={toggeleOrgPop}>
-        <div className="box has-background-grey-lighter">
-          <div className="columns is-multiline">
-            <div className="column is-half">
-              <ClickCard icon={faUser} onClick={userOrgSelect}>
-                Personal
-              </ClickCard>
-            </div>
-            {orgsMap}
-            <div className="column is-half">
-              <ClickCard icon={faBriefcase} onClick={createOrgPopupHandler}>
-                Create an Orginization
-              </ClickCard>
-            </div>
-          </div>
-        </div>
-      </Popup>
-      <Popup trigger={orgNamePop} closePopup={toggeleOrgNamePop}>
-        <form onSubmit={createOrgSubmitHandler} className="box">
-          <div className="field has-text-centered">
-            <div className="control">
-              <input
-                className="input"
-                type="text"
-                placeholder="Orginization Name"
-                value={newOrgName}
-                onChange={orgNameTextHandler}
-              />
-            </div>
-          </div>
-          <div className="field has-text-centered">
-            <div className="control">
-              <button type="submit" className="button is-primary">
-                Submit
-              </button>
-            </div>
-          </div>
-        </form>
-      </Popup>
-      {/*<Popup trigger={orgEditorPop} closePopup={toggleOrgEditorPop}>
-        {OrgEditor}
-            </Popup>*/}
     </div>
   );
 };
