@@ -18,18 +18,21 @@ import LoadingScreen from "./loading-screen/loading-screen.component";
 import OrgNode from "./org-node/org-node.component";
 
 import { OrgContext } from "../context/org.context";
+import { nanoid } from "nanoid";
 
 function OrgEditor() {
   const { orgId } = useContext(OrgContext);
 
   //export options
+  const [filename, setFilename] = useState("org-chart");
+  const [fileextension, setFileextension] = useState("pdf");
+
   const orgchart = useRef();
   const exportTo = () => {
+    setFilename(`OrgChart - ${orgId} - ${nanoid()}`);
+    setFileextension("png");
     orgchart.current.exportTo(filename, fileextension);
   };
-
-  const [filename, setFilename] = useState("org-chart");
-  const [fileextension, setFileextension] = useState("png");
 
   //
 

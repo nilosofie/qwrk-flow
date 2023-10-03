@@ -53,28 +53,34 @@ const OrgNode = ({ nodeData }) => {
   //Edit Node
   const [editNodePop, setEditNodePop] = useState(false);
   const [newManager, setNewManager] = useState("");
-  const [newUsers, setNewUsers] = useState([]);
+  const [newUsers, setNewUsers] = useState("");
+  const [newNotes, setNewNotes] = useState("");
 
-  const newManagerHandler = (value) => setNewManager(value);
-  const newUsersHandler = (arr) => setNewUsers(arr);
+  const newManagerTextHandler = (event) => setNewManager(event);
+  const newUsersTextHandler = (event) => setNewUsers(event);
+  const newNotesTextHandler = (event) => setNewNotes(event.target.value);
 
-  const handleKeyDown = (event) => {
-    if (event.key === "Backspace") setNewUsers((old) => old.slice(0, -1));
-  };
-
-  const newUserOnSelect = (value) => {
-    setNewUsers(value.split(","));
+  const splitToArr = (text) => {
+    return text.split(/(?:,| )+/);
   };
 
   const toggleEditNodePop = () => {
     setEditNodePop((old) => !old);
     !editNodePop ? setNodeName(listData.list) : setNodeName("");
-    newManagerHandler(listData?.manager);
-    newUsersHandler(listData?.users);
+    setNewManager(listData?.manager);
+    setNewUsers(listData?.users.toString());
+    setNewNotes(listData.notes ? listData.notes : "");
   };
 
   const nodeEditSubmitHandler = () => {
-    updateList(orgId, listData.listId, nodeName, newManager, newUsers);
+    updateList(
+      orgId,
+      listData.listId,
+      nodeName,
+      newManager,
+      splitToArr(newUsers),
+      newNotes
+    );
     setNodeName("");
     toggleEditNodePop();
   };
@@ -83,13 +89,13 @@ const OrgNode = ({ nodeData }) => {
 
   return (
     <>
-      <div className="box">
+      <div className="notification">
         <div className="content is-small">
           <h3>{listData.list}</h3>
           {listData.manager && <h4>{`${listData.manager}`}</h4>}
           {listData.users.length > 0 && (
             <div className="content block">
-              <ol>{listData.users}</ol>
+              <p>{listData.users}</p>
             </div>
           )}
         </div>
@@ -172,7 +178,8 @@ const OrgNode = ({ nodeData }) => {
                 placeholder="Manager"
                 data={orgUsers}
                 defaultVal={newManager}
-                onSelected={newManagerHandler}
+                onSelected={setNewManager}
+                onChange={newManagerTextHandler}
               />
             </div>
           </div>
@@ -181,12 +188,22 @@ const OrgNode = ({ nodeData }) => {
             <div className="conrtol">
               <TextInput
                 className="textarea"
-                trigger={["", ","]}
+                trigger={[" ", ",", ""]}
                 options={orgUsers}
                 spacer=""
                 value={newUsers}
-                onSelect={newUserOnSelect}
-                onKeyDown={handleKeyDown}
+                onChange={newUsersTextHandler}
+                rows="1"
+              />
+            </div>
+          </div>
+          <div className="field">
+            <label className="label">Notes</label>
+            <div className="conrtol">
+              <textarea
+                className="textarea"
+                value={newNotes}
+                onChange={newNotesTextHandler}
               />
             </div>
           </div>

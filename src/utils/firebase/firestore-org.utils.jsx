@@ -1,4 +1,3 @@
-import { async } from "@dabeng/react-orgchart";
 import {
   getFirestore,
   doc,
@@ -93,7 +92,8 @@ export const createList = async (
   list = "Unnamed List",
   parentId,
   listId = nanoid(),
-  users = []
+  users = [],
+  notes = ""
 ) => {
   //get count
   const colCountRef = collection(db, "org", orgId, "lists");
@@ -113,6 +113,7 @@ export const createList = async (
       order: listCount,
       manager: "",
       users,
+      notes,
     });
   } catch (error) {
     console.log("error creating the List", error.message);
@@ -127,7 +128,8 @@ export const updateList = async (
   listId,
   list = "Unnamed List",
   manager = "",
-  users = []
+  users = [],
+  notes
 ) => {
   //write list
   const listColRef = doc(db, "org", orgId, "lists", listId);
@@ -138,6 +140,7 @@ export const updateList = async (
       active: true,
       manager,
       users,
+      notes,
     });
   } catch (error) {
     console.log("error creating the List", error.message);
