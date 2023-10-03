@@ -1,7 +1,16 @@
-import React, { useContext } from "react";
+import React, { useContext, useRef, useState } from "react";
 
-import { query, collection, getFirestore, orderBy } from "firebase/firestore";
+import {
+  query,
+  collection,
+  getFirestore,
+  orderBy,
+  where,
+} from "firebase/firestore";
 import { useCollectionData } from "react-firebase-hooks/firestore";
+
+import { faDownload } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import OrganizationChart from "@dabeng/react-orgchart";
 
@@ -13,9 +22,24 @@ import { OrgContext } from "../context/org.context";
 function OrgEditor() {
   const { orgId } = useContext(OrgContext);
 
+  //export options
+  const orgchart = useRef();
+  const exportTo = () => {
+    orgchart.current.exportTo(filename, fileextension);
+  };
+
+  const [filename, setFilename] = useState("org-chart");
+  const [fileextension, setFileextension] = useState("png");
+
+  //
+
   const db = getFirestore();
   const listsQuery = orgId
-    ? query(collection(db, "org", orgId, "lists"), orderBy("order"))
+    ? query(
+        collection(db, "org", orgId, "lists"),
+        where("active", "==", true),
+        orderBy("order")
+      )
     : null;
 
   const [lists, listsLoading] = useCollectionData(listsQuery);
@@ -54,7 +78,7 @@ function OrgEditor() {
     return roots;
   };
 
-  const treeView = (arr) => {
+  const treeView = (arr = []) => {
     const newArr = [...arr];
 
     const newTree = listToTree(newArr);
@@ -67,11 +91,17 @@ function OrgEditor() {
       {listsLoading ? (
         <LoadingScreen />
       ) : (
-        <OrganizationChart
-          datasource={treeView(listsMap)}
-          NodeTemplate={OrgNode}
-          chartClass="org-chart"
-        />
+        <div>
+          <OrganizationChart
+            datasource={treeView(listsMap)}
+            NodeTemplate={OrgNode}
+            chartClass="org-chart"
+            ref={orgchart}
+          />
+          <button className="button" onClick={exportTo}>
+            <FontAwesomeIcon icon={faDownload} />
+          </button>
+        </div>
       )}
     </div>
   );

@@ -9,14 +9,13 @@ import { query, getFirestore, doc } from "firebase/firestore";
 
 import { useDocumentData } from "react-firebase-hooks/firestore";
 
-//import "react-autocomplete-input/dist/bundle.css";
-
 import Popup from "../popup.component";
 import LoadingScreen from "../loading-screen/loading-screen.component";
 import InputAuto from "../input-auto/input-auto.component";
 
 import {
   createList,
+  markListInactive,
   updateList,
 } from "../../utils/firebase/firestore-org.utils";
 
@@ -88,7 +87,11 @@ const OrgNode = ({ nodeData }) => {
         <div className="content is-small">
           <h3>{listData.list}</h3>
           {listData.manager && <h4>{`${listData.manager}`}</h4>}
-          {listData.users && <p>{`users: ${listData.users}`}</p>}
+          {listData.users.length > 0 && (
+            <div className="content block">
+              <ol>{listData.users}</ol>
+            </div>
+          )}
         </div>
         <div className="columns is-mobile is-variable is-1">
           <span className="column">
@@ -117,7 +120,9 @@ const OrgNode = ({ nodeData }) => {
             <button
               type="button"
               className="button is-link is-outlined is-responsive"
-              onClick={() => {}}
+              onClick={() => {
+                markListInactive(orgId, listData.listId);
+              }}
             >
               <FontAwesomeIcon icon={faMinus} />
             </button>

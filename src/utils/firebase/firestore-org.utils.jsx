@@ -1,3 +1,4 @@
+import { async } from "@dabeng/react-orgchart";
 import {
   getFirestore,
   doc,
@@ -137,6 +138,20 @@ export const updateList = async (
       active: true,
       manager,
       users,
+    });
+  } catch (error) {
+    console.log("error creating the List", error.message);
+  }
+
+  return listColRef;
+};
+
+export const markListInactive = async (orgId, listId) => {
+  const listColRef = doc(db, "org", orgId, "lists", listId);
+
+  try {
+    await updateDoc(listColRef, {
+      active: false,
     });
   } catch (error) {
     console.log("error creating the List", error.message);
