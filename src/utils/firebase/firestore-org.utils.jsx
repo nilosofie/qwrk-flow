@@ -120,6 +120,31 @@ export const createList = async (
   return listColRef;
 };
 
+//Update a List
+export const updateList = async (
+  orgId,
+  listId,
+  list = "Unnamed List",
+  manager = "",
+  users = []
+) => {
+  //write list
+  const listColRef = doc(db, "org", orgId, "lists", listId);
+
+  try {
+    await updateDoc(listColRef, {
+      list,
+      active: true,
+      manager,
+      users,
+    });
+  } catch (error) {
+    console.log("error creating the List", error.message);
+  }
+
+  return listColRef;
+};
+
 //Create default entries when creating an org
 const createDefaults = (orgId, orgName, userEmail) => {
   createList(orgId, orgName, "0", orgId, [userEmail]);

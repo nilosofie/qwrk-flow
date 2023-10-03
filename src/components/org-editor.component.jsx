@@ -1,12 +1,6 @@
 import React, { useContext } from "react";
 
-import {
-  query,
-  collection,
-  getFirestore,
-  where,
-  orderBy,
-} from "firebase/firestore";
+import { query, collection, getFirestore, orderBy } from "firebase/firestore";
 import { useCollectionData } from "react-firebase-hooks/firestore";
 
 import OrganizationChart from "@dabeng/react-orgchart";
@@ -24,7 +18,7 @@ function OrgEditor() {
     ? query(collection(db, "org", orgId, "lists"), orderBy("order"))
     : null;
 
-  const [lists, listsLoading, listsError] = useCollectionData(listsQuery);
+  const [lists, listsLoading] = useCollectionData(listsQuery);
 
   const listsMap = lists?.map((list) => {
     return {

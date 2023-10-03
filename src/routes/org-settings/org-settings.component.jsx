@@ -45,8 +45,6 @@ function OrgSettings() {
     listItem: user,
   }));
 
-  console.log(orgUsersArr);
-
   const userListObj = {
     arr: orgUsersArr,
     addToArray: addOrgUserHandler, //Add Item

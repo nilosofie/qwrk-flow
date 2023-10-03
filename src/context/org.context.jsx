@@ -1,20 +1,8 @@
 import { createContext, useState, useEffect, useContext } from "react";
 
-import {
-  query,
-  getFirestore,
-  doc,
-  getDoc,
-  where,
-  collection,
-  documentId,
-} from "firebase/firestore";
+import { query, getFirestore, doc } from "firebase/firestore";
 
-import {
-  useCollectionData,
-  useDocument,
-  useDocumentData,
-} from "react-firebase-hooks/firestore";
+import { useDocument, useDocumentData } from "react-firebase-hooks/firestore";
 
 import { updateNote } from "../utils/firebase/firestore-org.utils";
 
@@ -33,7 +21,7 @@ export const OrgContext = createContext({
 export const OrgProvider = ({ children }) => {
   //Context
 
-  const { uid, userName, userEmail } = useContext(UsersContext);
+  const { uid } = useContext(UsersContext);
 
   //states
   const [orgState, setOrgState] = useState(false);

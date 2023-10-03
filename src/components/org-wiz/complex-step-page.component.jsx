@@ -1,14 +1,14 @@
-import React, { useContext } from 'react';
+import React, { useContext } from "react";
 
-import WizBody from './wiz-body.component';
-import List from './list.org-wiz.component';
+import WizBody from "./wiz-body.component";
+import List from "./list.org-wiz.component";
 
-import { OrgTreeContext } from '../../context/org-tree.context';
+import { OrgTreeContext } from "../../context/org-tree.context";
 
-import { WizStepCountContext } from '../../context/wiz-step-count.context';
+import { WizStepCountContext } from "../../context/wiz-step-count.context";
 
 // import { leadGenBucket } from "../data/tree-root.data"; //send from page
-import { nanoid } from 'nanoid';
+import { nanoid } from "nanoid";
 
 //localBucket
 //title
@@ -70,14 +70,12 @@ const ComplexStepPage = ({ localBucket, title, video }) => {
 
   const moveFromBucketList = (id) => {
     const obj = localListCopy.filter((obj) => obj.id === id)[0];
-    console.log(obj);
     addToActionList(obj.name, obj.id);
     removeFromBucket(obj.id);
   };
 
   const removeFromBucketList = (id) => {
     const obj = localListCopy.filter((obj) => obj.id === id)[0];
-    console.log(obj);
     removeFromBucket(obj.id);
   };
 
@@ -87,7 +85,7 @@ const ComplexStepPage = ({ localBucket, title, video }) => {
     removeFromArray: removeFromActionList,
     moveItemToSub: moveActionToBucket,
     addItemToChild: () => {
-      alert('Send to Child');
+      alert("Send to Child");
     },
     removeFromArrayVis: true,
     moveItemToSubVis: true,
@@ -100,7 +98,7 @@ const ComplexStepPage = ({ localBucket, title, video }) => {
     removeFromArray: removeFromBucketList, //Delete
     sendItemToMain: moveFromBucketList, // Move Item from sub array to main array
     addItemToChild: () => {
-      alert('Send to Child');
+      alert("Send to Child");
     }, // Move Item from main array to sub array child
     addToArrayVis: true,
     removeFromArrayVis: true,

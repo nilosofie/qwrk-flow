@@ -29,7 +29,7 @@ const Home = () => {
 
   const { uid, userName, userEmail } = useContext(UsersContext);
 
-  const { orgName, updateOrgId, orgState, orgUsers } = useContext(OrgContext);
+  const { orgName, updateOrgId, orgState } = useContext(OrgContext);
 
   //Database-------------------------------------------------------------------------------------------
   const db = getFirestore();
@@ -38,7 +38,7 @@ const Home = () => {
     ? query(collection(db, "org"), where("users", "array-contains", userEmail))
     : null;
 
-  const [orgs, loading, error] = useCollectionData(orgsQuery);
+  const [orgs, loading] = useCollectionData(orgsQuery);
 
   //Popups------------------------------------------------------------------------------------------
 
