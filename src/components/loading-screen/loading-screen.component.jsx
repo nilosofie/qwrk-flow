@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React from "react";
 
-import WhiteLogo from '../../assets/Qwrk Embleem Pakkie sb 130423 v13.png';
+import WhiteLogo from "../../assets/Qwrk Embleem Pakkie sb 130423 v13.png";
 
-import './loading-screen.styles.scss';
+import "./loading-screen.styles.scss";
 
 function LoadingScreen() {
   return (

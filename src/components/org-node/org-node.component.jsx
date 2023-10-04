@@ -93,11 +93,6 @@ const OrgNode = ({ nodeData }) => {
         <div className="content is-small">
           <h3>{listData.list}</h3>
           {listData.manager && <h4>{`${listData.manager}`}</h4>}
-          {listData.users.length > 0 && (
-            <div className="content block">
-              <p>{listData.users}</p>
-            </div>
-          )}
         </div>
         <div className="columns is-mobile is-variable is-1">
           <span className="column">

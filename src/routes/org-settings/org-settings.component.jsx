@@ -4,19 +4,21 @@ import { useNavigate } from "react-router-dom";
 import {
   faUsers,
   faSitemap,
-  faCreditCard,
-  faPuzzlePiece,
+  faCreditCard, //Don't delete
+  faPuzzlePiece, //Don't delete
   faBriefcase,
 } from "@fortawesome/free-solid-svg-icons";
 
 import {
   addOrgUser,
   removeOrgUser,
+  updateOrg,
 } from "../../utils/firebase/firestore-org.utils";
 
 import ClickCard from "../../components/click-card.component";
 import Popup from "../../components/popup.component";
 import List from "../../components/list.component";
+import OrgDetails from "./org-details.component";
 
 import { OrgContext } from "../../context/org.context";
 
@@ -26,9 +28,14 @@ function OrgSettings() {
 
   //Popups------------------------------------------------------------------------------------------
   //Org Details
+  const [orgDetailsPop, setOrgDetailsPop] = useState(false);
+  const toggleOrgDetailsPop = () => {
+    setOrgDetailsPop((old) => !old);
+  };
+
   //Users
   const [userPop, setUserPop] = useState(false);
-  const toggeleUserPop = () => {
+  const toggleUserPop = () => {
     setUserPop((oldStatus) => !oldStatus);
   };
 
@@ -69,21 +76,8 @@ function OrgSettings() {
         <br />
         <div className="columns is-multiline">
           <div className="column is-one-third">
-            <ClickCard
-              onClick={() => navigate("/org-chart")}
-              icon={faBriefcase}
-            >
-              <div>
-                <button className="button is-primary is-fullwidth">
-                  Update Org Details
-                </button>
-              </div>
-              <br />
-              <div>
-                <button className="button is-danger is-fullwidth">
-                  Delete Org
-                </button>
-              </div>
+            <ClickCard onClick={toggleOrgDetailsPop} icon={faBriefcase}>
+              <p>Update Orginization Details</p>
             </ClickCard>
           </div>
           <div className="column is-one-third">
@@ -96,7 +90,7 @@ function OrgSettings() {
           <div className="column is-one-third">
             <ClickCard
               onClick={() => {
-                toggeleUserPop();
+                toggleUserPop();
               }}
               icon={faUsers}
             >
@@ -106,7 +100,7 @@ function OrgSettings() {
             </ClickCard>
           </div>
           <div className="column is-one-third">
-            <ClickCard onClick={() => {}} icon={faPuzzlePiece}>
+            {/*<ClickCard onClick={() => {}} icon={faPuzzlePiece}>
               <div>
                 <p>Add/Remove Modules</p>
               </div>
@@ -117,12 +111,19 @@ function OrgSettings() {
               <div>
                 <p>Update Plan</p>
               </div>
-            </ClickCard>
+            </ClickCard>*/}
           </div>
         </div>
       </div>
-      <Popup trigger={userPop} closePopup={toggeleUserPop}>
+      <Popup trigger={userPop} closePopup={toggleUserPop}>
         <List listObject={userListObj} />
+      </Popup>
+      <Popup trigger={orgDetailsPop} closePopup={toggleOrgDetailsPop}>
+        <OrgDetails
+          orgId={orgId}
+          orgName={orgName}
+          togglePop={toggleOrgDetailsPop}
+        />
       </Popup>
     </div>
   );

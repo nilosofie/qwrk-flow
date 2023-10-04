@@ -64,6 +64,21 @@ export const createUserOrgDocument = async (userName = "User", userEmail) => {
   return orgDocRef;
 };
 
+//Update Org
+
+export const updateOrg = async (orgId, orgName) => {
+  const orgDocRef = doc(db, "org", orgId);
+
+  try {
+    await updateDoc(orgDocRef, {
+      orgName: orgName,
+    });
+  } catch (error) {
+    console.log("error creating the user", error.message);
+  }
+  return orgDocRef;
+};
+
 //Create List Types
 export const createListType = async (
   orgId,
