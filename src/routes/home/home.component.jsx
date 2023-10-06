@@ -29,7 +29,8 @@ const Home = () => {
 
   const { uid, userName, userEmail } = useContext(UsersContext);
 
-  const { orgName, updateOrgId, orgState } = useContext(OrgContext);
+  const { orgName, updateOrgId, orgState, orgUsersData } =
+    useContext(OrgContext);
 
   //Database-------------------------------------------------------------------------------------------
   const db = getFirestore();
@@ -121,7 +122,10 @@ const Home = () => {
           </div>
 
           <div className="column is-half">
-            <ClickCard icon={faUsers} onClick={() => console.log("clicked")}>
+            <ClickCard
+              icon={faUsers}
+              onClick={async () => console.log(await orgUsersData)}
+            >
               <p>Select Role</p>
             </ClickCard>
           </div>

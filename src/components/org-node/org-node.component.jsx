@@ -199,6 +199,7 @@ const OrgNode = ({ nodeData }) => {
                 className="textarea"
                 value={newNotes}
                 onChange={newNotesTextHandler}
+                rows="15"
               />
             </div>
           </div>

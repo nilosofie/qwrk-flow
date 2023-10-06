@@ -1,6 +1,14 @@
 import { createContext, useState, useEffect, useContext } from "react";
 
-import { query, getFirestore, doc } from "firebase/firestore";
+import {
+  query,
+  getFirestore,
+  doc,
+  getDoc,
+  collection,
+  where,
+  getDocs,
+} from "firebase/firestore";
 
 import { useDocument, useDocumentData } from "react-firebase-hooks/firestore";
 
@@ -16,6 +24,7 @@ export const OrgContext = createContext({
   notesObj: {},
   saveNote: () => {},
   orgUsers: [],
+  orgUsersData: [],
 });
 
 export const OrgProvider = ({ children }) => {
@@ -27,14 +36,13 @@ export const OrgProvider = ({ children }) => {
   const [orgState, setOrgState] = useState(false);
   const [orgId, setOrgId] = useState("");
   const [orgName, setOrgName] = useState("");
-  //const [orgUsers, setOrgUsers] = useState([]);
 
   //Database
 
   const db = getFirestore();
 
   const orgQuery = orgId ? query(doc(db, `org/${orgId}`)) : null;
-  const [org, orgLoading] = useDocument(orgQuery);
+  const [org, orgLoading] = useDocumentData(orgQuery);
 
   const notesQuery = orgId ? query(doc(db, `org/${orgId}/notes/${uid}`)) : null;
   const [notes, notesLoading, notesError] = useDocumentData(notesQuery);
@@ -45,34 +53,61 @@ export const OrgProvider = ({ children }) => {
     notesError,
   };
 
-  // const orgUserQuery = org?.data().users
-  //   ? query(collection(db, "users"), where("email", "in", org.data().users))
-  //   : null;
+  const orgUsers = org?.users;
 
-  // const [regOrgUsers, regOrgUsersLoading] = useCollectionData(orgUserQuery);
+  const [orgUsersData, setOrgUsersData] = useState([]);
 
-  // useEffect(() => {
-  //   if (!regOrgUsersLoading) {
-  //     org.data().users.forEach((element) => {
-  //       console.log(element);
-  //       console.log(regOrgUsers);
-  //       setOrgUsers((old) => {
-  //         const retArr = [...old];
-  //         retArr.push(element);
-  //         return retArr;
-  //       });
-  //       //setOrgUsers(regOrgUsers);
-  //     });
-  //   }
-  // }, [regOrgUsers]);
+  const fetchUserDetails = async (uids) => {
+    console.log("fetchUserDetails Fire");
+    if (org) {
+      console.log("Org If Fire");
+      const userPromises = uids.map(async (user) => {
+        // Query the users collection for each uid
+        //const userDoc = await db.collection("users").doc(uid).get();
+        const docRef = doc(db, "users", user);
+        const userDoc = await getDoc(docRef);
 
-  const orgUsers = org?.data().users;
+        if (userDoc.exists()) {
+          // User exists, return user data
+          return { ...userDoc.data(), registered: true };
+        } else {
+          // Handle the case where the user with this uid doesn't exist
+
+          //Current function to Fix
+          const checkEmail = async (userEmail) => {
+            const userCollection = collection(db, "users");
+            const checkEmailQuery = query(
+              userCollection,
+              where("email", "==", userEmail)
+            );
+            console.log(await getDocs(checkEmailQuery));
+          };
+          checkEmail(user);
+          return { displayName: user, registered: false };
+        }
+      });
+
+      // Wait for all promises to resolve
+      const users = await Promise.all(userPromises);
+
+      // Filter out any null values (non-existing users)
+      const userDetails = users.filter((user) => user !== null);
+
+      return userDetails;
+    } else return ["none"];
+  };
+
+  useEffect(() => {
+    setOrgUsersData(async () => fetchUserDetails(await orgUsers), [orgUsers]);
+
+    console.log("orgUserData: ", orgUsersData);
+    console.log("orgUsers: ", orgUsers);
+  }, [org]);
 
   //-------------------------------------------------------------------------
 
   const updateOrgId = (id) => {
     setOrgId(id);
-    //setOrgUsers([]);
   };
 
   const saveNote = (note) => {
@@ -81,7 +116,7 @@ export const OrgProvider = ({ children }) => {
 
   useEffect(() => {
     (() => {
-      const localOrgName = org?.data().orgName;
+      const localOrgName = org?.orgName;
       orgId ? setOrgState(true) : setOrgState(false);
       org && setOrgName(localOrgName);
     })();
@@ -95,6 +130,7 @@ export const OrgProvider = ({ children }) => {
     notesObj,
     saveNote,
     orgUsers,
+    orgUsersData,
   };
   return <OrgContext.Provider value={value}>{children}</OrgContext.Provider>;
 };
