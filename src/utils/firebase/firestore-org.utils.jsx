@@ -24,7 +24,7 @@ export const createOrgDocument = async (orgName = "Unnamed Org", userEmail) => {
     await setDoc(orgDocRef, {
       orgName: orgName,
       orgId: newOrgID,
-      users: [userEmail],
+      users: [],
       createdAt: createdAt,
       active: true,
       owner: userEmail,
@@ -184,6 +184,7 @@ const createDefaults = (orgId, orgName, userEmail) => {
   createListType(orgId, "Once-Off (Actions)");
   createListType(orgId, "Follow-Up");
   createListType(orgId, "Recurring");
+  addOrgUser(orgId, userEmail);
 };
 
 //Update notes
@@ -252,14 +253,36 @@ export const addOrgUser = async (orgId, userEmail) => {
       users: arrayUnion(userEmail),
     });
   }
+
+  const orgUserId = nanoid();
+  const orgUsersColRef = doc(db, "org", orgId, "orgUsers", orgUserId);
+
+  try {
+    await setDoc(orgUsersColRef, {
+      orgUserId,
+      uid: userEmail,
+      active: true,
+    });
+  } catch (error) {
+    console.log("error creating the ListType", error.message);
+  }
 };
 
-export const removeOrgUser = async (orgId, userEmail) => {
+export const removeOrgUser = async (orgId, orgUserId) => {
   //const createdAt = new Date();
   if (orgId) {
     const orgItemRef = doc(db, `org/${orgId}`);
     await updateDoc(orgItemRef, {
-      users: arrayRemove(userEmail),
+      users: arrayRemove(orgUserId),
     });
+  }
+
+  const orgUsersColRef = doc(db, "org", orgId, "orgUsers", orgUserId);
+  try {
+    await updateDoc(orgUsersColRef, {
+      active: false,
+    });
+  } catch (error) {
+    console.log("error updating the orgUser", error.message);
   }
 };
