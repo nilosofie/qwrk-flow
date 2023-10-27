@@ -10,7 +10,7 @@ import {
   getDocs,
 } from "firebase/firestore";
 
-import { useDocument, useDocumentData } from "react-firebase-hooks/firestore";
+import { useDocumentData } from "react-firebase-hooks/firestore";
 
 import { updateNote } from "../utils/firebase/firestore-org.utils";
 
@@ -19,7 +19,9 @@ import { UsersContext } from "./users.context";
 export const OrgContext = createContext({
   orgState: false,
   orgId: "",
+  orgUserId: "",
   updateOrgId: () => {},
+  updateOrgUserId: () => {},
   orgName: "",
   notesObj: {},
   saveNote: () => {},
@@ -35,6 +37,7 @@ export const OrgProvider = ({ children }) => {
   //states
   const [orgState, setOrgState] = useState(false);
   const [orgId, setOrgId] = useState("");
+  const [orgUserId, setOrgUserId] = useState("");
   const [orgName, setOrgName] = useState("");
 
   //Database
@@ -58,9 +61,7 @@ export const OrgProvider = ({ children }) => {
   const [orgUsersData, setOrgUsersData] = useState([]);
 
   const fetchUserDetails = async (uids) => {
-    console.log("fetchUserDetails Fire");
     if (org) {
-      console.log("Org If Fire");
       const userPromises = uids.map(async (user) => {
         // Query the users collection for each uid
         //const userDoc = await db.collection("users").doc(uid).get();
@@ -80,7 +81,6 @@ export const OrgProvider = ({ children }) => {
               userCollection,
               where("email", "==", userEmail)
             );
-            console.log(await getDocs(checkEmailQuery));
           };
           checkEmail(user);
           return { displayName: user, registered: false };
@@ -99,15 +99,16 @@ export const OrgProvider = ({ children }) => {
 
   useEffect(() => {
     setOrgUsersData(async () => fetchUserDetails(await orgUsers), [orgUsers]);
-
-    console.log("orgUserData: ", orgUsersData);
-    console.log("orgUsers: ", orgUsers);
   }, [org]);
 
   //-------------------------------------------------------------------------
 
   const updateOrgId = (id) => {
     setOrgId(id);
+  };
+
+  const updateOrgUserId = (orgUserId) => {
+    setOrgUserId(orgUserId);
   };
 
   const saveNote = (note) => {
@@ -124,8 +125,10 @@ export const OrgProvider = ({ children }) => {
 
   const value = {
     orgId,
+    orgUserId,
     orgState,
     updateOrgId,
+    updateOrgUserId,
     orgName,
     notesObj,
     saveNote,

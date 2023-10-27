@@ -1,13 +1,16 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 
 import { query, collection, getFirestore, where } from "firebase/firestore";
-
-import { useCollectionData } from "react-firebase-hooks/firestore";
 
 import {
   createOrgDocument,
   createUserOrgDocument,
 } from "../../utils/firebase/firestore-org.utils";
+
+import {
+  userOrgs,
+  orgUserIdFromOrgId,
+} from "../../utils/firebase/cross-ref.utils";
 
 import { UsersContext } from "../../context/users.context";
 
@@ -29,7 +32,7 @@ const Home = () => {
 
   const { uid, userName, userEmail } = useContext(UsersContext);
 
-  const { orgName, updateOrgId, orgState, orgUsersData } =
+  const { orgName, updateOrgId, orgState, updateOrgUserId, orgUserId } =
     useContext(OrgContext);
 
   //Database-------------------------------------------------------------------------------------------
@@ -39,7 +42,14 @@ const Home = () => {
     ? query(collection(db, "org"), where("users", "array-contains", userEmail))
     : null;
 
-  const [orgs, loading] = useCollectionData(orgsQuery);
+  const [orgs, setOrgs] = useState(null);
+
+  useEffect(() => {
+    (async () => {
+      const res = await userOrgs(uid);
+      setOrgs(res);
+    })();
+  }, [uid]);
 
   //Popups------------------------------------------------------------------------------------------
 
@@ -67,15 +77,17 @@ const Home = () => {
 
   const createOrgSubmitHandler = async (event) => {
     event.preventDefault();
-    await createOrgDocument(newOrgName, userEmail);
-
+    const newOrgId = await createOrgDocument(newOrgName, userEmail);
+    orgSelect(newOrgId);
     createOrgPopupHandler();
+    toggeleOrgPop();
   };
 
   //Select Org-------------------------------------------------------------------------------
 
-  const orgSelect = (orgId) => {
+  const orgSelect = async (orgId) => {
     updateOrgId(orgId);
+    updateOrgUserId(await orgUserIdFromOrgId(orgId, uid));
     toggeleOrgPop();
   };
 
@@ -87,7 +99,7 @@ const Home = () => {
   //Maps----------------------------------------------------------------------------------------
 
   const orgsMap = orgs?.map((org) => (
-    <div className="column is-half" key={org.orgId}>
+    <div className="column is-half" key={org.orgUserId}>
       <ClickCard icon={faSitemap} onClick={() => orgSelect(org.orgId)}>
         {org.orgName}
       </ClickCard>
@@ -96,7 +108,9 @@ const Home = () => {
 
   //Return-----------------------------------------------------------------------------------------
 
-  if (loading) return <LoadingScreen />;
+  if (orgs === null) return <LoadingScreen />;
+
+  //if (loading) return <LoadingScreen />;
 
   return (
     <div>
@@ -124,7 +138,7 @@ const Home = () => {
           <div className="column is-half">
             <ClickCard
               icon={faUsers}
-              onClick={async () => console.log(await orgUsersData)}
+              onClick={async () => console.log(orgUserId)}
             >
               <p>Select Role</p>
             </ClickCard>

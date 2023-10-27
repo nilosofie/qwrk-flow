@@ -8,6 +8,9 @@ import {
   getCountFromServer,
   arrayUnion,
   arrayRemove,
+  query,
+  where,
+  getDocs,
 } from "firebase/firestore";
 
 import { nanoid } from "nanoid";
@@ -35,7 +38,7 @@ export const createOrgDocument = async (orgName = "Unnamed Org", userEmail) => {
 
   createDefaults(newOrgID, orgName, userEmail);
 
-  return orgDocRef;
+  return newOrgID;
 };
 
 //Create a user Org document in firestore
@@ -255,17 +258,20 @@ export const addOrgUser = async (orgId, userEmail) => {
   }
 
   const orgUserId = nanoid();
-  const orgUsersColRef = doc(db, "org", orgId, "orgUsers", orgUserId);
+  const orgUsersColRef = doc(db, "orgUsers", orgUserId);
 
   try {
     await setDoc(orgUsersColRef, {
       orgUserId,
       uid: userEmail,
       active: true,
+      orgId,
     });
   } catch (error) {
     console.log("error creating the ListType", error.message);
   }
+
+  emailToUid(userEmail);
 };
 
 export const removeOrgUser = async (orgId, orgUserId) => {
@@ -277,7 +283,7 @@ export const removeOrgUser = async (orgId, orgUserId) => {
     });
   }
 
-  const orgUsersColRef = doc(db, "org", orgId, "orgUsers", orgUserId);
+  const orgUsersColRef = doc(db, "orgUsers", orgUserId);
   try {
     await updateDoc(orgUsersColRef, {
       active: false,
@@ -285,4 +291,36 @@ export const removeOrgUser = async (orgId, orgUserId) => {
   } catch (error) {
     console.log("error updating the orgUser", error.message);
   }
+};
+//remove export
+const getUidByEmail = async (userEmail) => {
+  const usersRef = collection(db, "users");
+  const usersQuery = query(usersRef, where("email", "==", userEmail));
+  const usersSnapshot = await getDocs(usersQuery);
+
+  const userDoc = usersSnapshot.docs[0];
+  return userDoc.id;
+};
+
+//function to find all orgUser docs with the email provided and change to the uid
+export const emailToUid = async (userEmail) => {
+  const userUid = await getUidByEmail(userEmail);
+
+  const emailToUidRef = collection(db, "orgUsers");
+  const emailToUidQuery = query(emailToUidRef, where("uid", "==", userEmail));
+  const emailToUidSnapshot = await getDocs(emailToUidQuery);
+
+  emailToUidSnapshot.forEach(async (locDoc) => {
+    console.log(locDoc.id);
+    const docId = locDoc.id;
+    const orgUserRef = doc(db, `orgUsers/${docId}`);
+
+    try {
+      await updateDoc(orgUserRef, {
+        uid: userUid,
+      });
+    } catch (error) {
+      console.log("error updating the orgUser", error.message);
+    }
+  });
 };
