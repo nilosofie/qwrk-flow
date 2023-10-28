@@ -1,7 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
 
-import { query, collection, getFirestore, where } from "firebase/firestore";
-
 import {
   createOrgDocument,
   createUserOrgDocument,
@@ -32,15 +30,10 @@ const Home = () => {
 
   const { uid, userName, userEmail } = useContext(UsersContext);
 
-  const { orgName, updateOrgId, orgState, updateOrgUserId, orgUserId } =
+  const { orgName, updateOrgId, orgState, updateOrgUserId } =
     useContext(OrgContext);
 
   //Database-------------------------------------------------------------------------------------------
-  const db = getFirestore();
-
-  const orgsQuery = uid
-    ? query(collection(db, "org"), where("users", "array-contains", userEmail))
-    : null;
 
   const [orgs, setOrgs] = useState(null);
 
@@ -136,10 +129,7 @@ const Home = () => {
           </div>
 
           <div className="column is-half">
-            <ClickCard
-              icon={faUsers}
-              onClick={async () => console.log(orgUserId)}
-            >
+            <ClickCard icon={faUsers} onClick={async () => console.log("")}>
               <p>Select Role</p>
             </ClickCard>
           </div>

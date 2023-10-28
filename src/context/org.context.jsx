@@ -7,12 +7,15 @@ import {
   getDoc,
   collection,
   where,
-  getDocs,
 } from "firebase/firestore";
 
-import { useDocumentData } from "react-firebase-hooks/firestore";
+import {
+  useDocumentData,
+  useCollectionData,
+} from "react-firebase-hooks/firestore";
 
 import { updateNote } from "../utils/firebase/firestore-org.utils";
+import { userFromOrgRef } from "../utils/firebase/cross-ref.utils";
 
 import { UsersContext } from "./users.context";
 
@@ -57,6 +60,11 @@ export const OrgProvider = ({ children }) => {
   };
 
   const orgUsers = org?.users;
+  const orgUsersQ = orgId
+    ? query(collection(db, "orgUsers"), where("orgId", "==", orgId))
+    : null;
+  const [orgUsersInd] = useCollectionData(orgUsersQ);
+  const [orgUsersN, setOrgUsersN] = useState({});
 
   const [orgUsersData, setOrgUsersData] = useState([]);
 
@@ -97,11 +105,19 @@ export const OrgProvider = ({ children }) => {
     } else return ["none"];
   };
 
+  // Fix .data issue
   useEffect(() => {
     setOrgUsersData(async () => fetchUserDetails(await orgUsers), [orgUsers]);
-  }, [org]);
 
-  //-------------------------------------------------------------------------
+    // Get all user profiles associated with org - returns object with orgUserId as index and users profile as data object
+    org &&
+      orgUsersInd.forEach(async (ind) => {
+        const userDoc = await userFromOrgRef(ind.orgUserId);
+        setOrgUsersN((old) => {
+          return { ...old, ...userDoc };
+        });
+      });
+  }, [org]);
 
   const updateOrgId = (id) => {
     setOrgId(id);

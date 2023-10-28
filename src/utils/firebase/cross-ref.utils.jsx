@@ -10,37 +10,20 @@ import {
   getDoc,
 } from "firebase/firestore";
 
-export const uidsToEmail = async (uidArray, displayNameObj) => {
-  const retArr = [];
-  const displayNameObjLoc = await displayNameObj;
-
-  console.log(displayNameObjLoc);
-
-  uidArray.forEach((uid) => {
-    const i = displayNameObjLoc.findIndex((obj) => {
-      return obj.uid === uid;
-    });
-
-    i !== -1 ? retArr.push(displayNameObjLoc[i].email) : retArr.push(uid);
-  });
-  console.log(retArr);
-  return retArr;
+const getIndObj = (ind, docData) => {
+  var retObj = {}; // Create an empty object
+  retObj[ind] = docData; // Set the "ind" property to docData
+  return retObj;
 };
 
 //uid string returns displayname string
 
-export const uidToDisplay = async (uid, displayNameObj) => {
-  const displayNameObjLoc = await displayNameObj;
+export const uidToUserDoc = async (uid) => {
+  const userDocRef = doc(db, "users", uid);
 
-  const i = displayNameObjLoc.findIndex((obj) => {
-    return obj.uid === uid;
-  });
+  const userDoc = await getDoc(userDocRef);
 
-  console.log("I", i);
-  displayNameObjLoc[i] &&
-    console.log("Displayname", displayNameObjLoc[i].displayName);
-
-  return i !== -1 ? displayNameObjLoc[i].displayName : undefined;
+  return await userDoc.data();
 };
 
 // Return Org Document for orgId
@@ -88,4 +71,17 @@ export const orgUserIdFromOrgId = async (orgId, uid) => {
   });
 
   return await retArr[0];
+};
+
+// Returns user for orgUserId
+
+export const userFromOrgRef = async (orgUserId) => {
+  const orgUserDocRef = doc(db, "orgUsers", orgUserId);
+  const orgUserDoc = await getDoc(orgUserDocRef);
+
+  const docData = await uidToUserDoc(orgUserDoc.data().uid);
+
+  const retObj = getIndObj(orgUserId, docData);
+
+  return retObj;
 };
