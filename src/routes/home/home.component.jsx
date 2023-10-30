@@ -72,7 +72,9 @@ const Home = () => {
     event.preventDefault();
     const newOrgId = await createOrgDocument(newOrgName, userEmail);
     orgSelect(newOrgId);
-    createOrgPopupHandler();
+    updateOrgUserId(await orgUserIdFromOrgId(newOrgId, uid));
+    //createOrgPopupHandler();
+    toggeleOrgNamePop();
     toggeleOrgPop();
   };
 
@@ -91,13 +93,16 @@ const Home = () => {
   };
   //Maps----------------------------------------------------------------------------------------
 
-  const orgsMap = orgs?.map((org) => (
-    <div className="column is-half" key={org.orgUserId}>
-      <ClickCard icon={faSitemap} onClick={() => orgSelect(org.orgId)}>
-        {org.orgName}
-      </ClickCard>
-    </div>
-  ));
+  const orgsMap = orgs?.map(
+    (org) =>
+      org && (
+        <div className="column is-half" key={org.orgUserId}>
+          <ClickCard icon={faSitemap} onClick={() => orgSelect(org.orgId)}>
+            {org.orgName}
+          </ClickCard>
+        </div>
+      )
+  );
 
   //Return-----------------------------------------------------------------------------------------
 

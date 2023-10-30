@@ -21,7 +21,7 @@ import Home from "../home/home.component";
 
 const Navigation = () => {
   const { setUser } = useContext(UsersContext);
-  const { orgId } = useContext(OrgContext);
+  const { orgId, orgTest } = useContext(OrgContext);
 
   const [navBurgerStatus, setNavBurgerStatus] = useState(false);
 
@@ -90,6 +90,9 @@ const Navigation = () => {
               onClick={() => setNavBurgerStatus(false)}
             >
               <h1>Organization Settings</h1>
+            </Link>
+            <Link type className="navbar-item" onClick={orgTest}>
+              orgTest
             </Link>
             {user ? (
               <Link type className="navbar-item" onClick={signOutUser}>

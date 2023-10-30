@@ -7,6 +7,7 @@ import {
   getDoc,
   collection,
   where,
+  getDocs,
 } from "firebase/firestore";
 
 import {
@@ -30,6 +31,7 @@ export const OrgContext = createContext({
   saveNote: () => {},
   orgUsers: [],
   orgUsersData: [],
+  orgTest: () => {},
 });
 
 export const OrgProvider = ({ children }) => {
@@ -105,9 +107,9 @@ export const OrgProvider = ({ children }) => {
     } else return ["none"];
   };
 
-  // Fix .data issue
   useEffect(() => {
     setOrgUsersData(async () => fetchUserDetails(await orgUsers), [orgUsers]);
+    setOrgUsersN({});
 
     // Get all user profiles associated with org - returns object with orgUserId as index and users profile as data object
     org &&
@@ -117,7 +119,7 @@ export const OrgProvider = ({ children }) => {
           return { ...old, ...userDoc };
         });
       });
-  }, [org]);
+  }, [org, orgUsersInd]);
 
   const updateOrgId = (id) => {
     setOrgId(id);
@@ -139,6 +141,13 @@ export const OrgProvider = ({ children }) => {
     })();
   }, [orgId, org, orgLoading]);
 
+  const orgTest = async () => {
+    console.log("orgTest: ");
+    console.log(orgUsersN);
+
+    // Zawadi Org Chart y47xUzpEtLil6k4kKArt9 cbjjVYS1qL58BM9CevHv6
+  };
+
   const value = {
     orgId,
     orgUserId,
@@ -150,6 +159,7 @@ export const OrgProvider = ({ children }) => {
     saveNote,
     orgUsers,
     orgUsersData,
+    orgTest,
   };
   return <OrgContext.Provider value={value}>{children}</OrgContext.Provider>;
 };
