@@ -81,7 +81,13 @@ export const userFromOrgRef = async (orgUserId) => {
 
   const docData = await uidToUserDoc(orgUserDoc.data().uid);
 
-  const retObj = getIndObj(orgUserId, docData);
+  const retObj = docData
+    ? getIndObj(orgUserId, { ...docData, registered: true })
+    : getIndObj(orgUserId, {
+        displayName: orgUserDoc.data().uid,
+        email: orgUserDoc.data().uid,
+        registered: false,
+      });
 
   return retObj;
 };

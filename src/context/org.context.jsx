@@ -32,6 +32,7 @@ export const OrgContext = createContext({
   orgUsers: [],
   orgUsersData: [],
   orgTest: () => {},
+  orgUsersN: {},
 });
 
 export const OrgProvider = ({ children }) => {
@@ -63,7 +64,11 @@ export const OrgProvider = ({ children }) => {
 
   const orgUsers = org?.users;
   const orgUsersQ = orgId
-    ? query(collection(db, "orgUsers"), where("orgId", "==", orgId))
+    ? query(
+        collection(db, "orgUsers"),
+        where("orgId", "==", orgId),
+        where("active", "==", true)
+      )
     : null;
   const [orgUsersInd] = useCollectionData(orgUsersQ);
   const [orgUsersN, setOrgUsersN] = useState({});
@@ -143,7 +148,8 @@ export const OrgProvider = ({ children }) => {
 
   const orgTest = async () => {
     console.log("orgTest: ");
-    console.log(orgUsersN);
+    console.log("orgUsersN", orgUsersN);
+    console.log("orgUsersInd", orgUsersInd);
 
     // Zawadi Org Chart y47xUzpEtLil6k4kKArt9 cbjjVYS1qL58BM9CevHv6
   };
@@ -159,6 +165,7 @@ export const OrgProvider = ({ children }) => {
     saveNote,
     orgUsers,
     orgUsersData,
+    orgUsersN,
     orgTest,
   };
   return <OrgContext.Provider value={value}>{children}</OrgContext.Provider>;

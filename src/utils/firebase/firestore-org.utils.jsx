@@ -299,7 +299,7 @@ const getUidByEmail = async (userEmail) => {
   const usersSnapshot = await getDocs(usersQuery);
 
   const userDoc = usersSnapshot.docs[0];
-  return userDoc.id;
+  return userDoc ? userDoc.id : userEmail;
 };
 
 //function to find all orgUser docs with the email provided and change to the uid
@@ -311,7 +311,6 @@ export const emailToUid = async (userEmail) => {
   const emailToUidSnapshot = await getDocs(emailToUidQuery);
 
   emailToUidSnapshot.forEach(async (locDoc) => {
-    console.log(locDoc.id);
     const docId = locDoc.id;
     const orgUserRef = doc(db, `orgUsers/${docId}`);
 

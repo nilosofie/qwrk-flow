@@ -7,7 +7,7 @@ import { OrgContext } from "../../context/org.context";
 function OrgChart() {
   const { orgName } = useContext(OrgContext);
   return (
-    <div className="container">
+    <div>
       <br />
       <div className="hero">
         <div className="container hero-head block has-text-centered">

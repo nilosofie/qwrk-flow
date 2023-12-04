@@ -23,7 +23,7 @@ import OrgDetails from "./org-details.component";
 import { OrgContext } from "../../context/org.context";
 
 function OrgSettings() {
-  const { orgName, orgUsers, orgId } = useContext(OrgContext);
+  const { orgName, orgUsers, orgId, orgUsersN } = useContext(OrgContext);
   const navigate = useNavigate();
 
   //Popups------------------------------------------------------------------------------------------
@@ -47,13 +47,22 @@ function OrgSettings() {
     removeOrgUser(orgId, userEmail);
   };
 
+  const orgUsersNArr = () => {
+    const retArr = [];
+
+    for (const key in orgUsersN) {
+      retArr.push({ listItemId: key, listItem: orgUsersN[key].email });
+    }
+    return retArr;
+  };
+
   const orgUsersArr = orgUsers?.map((user) => ({
     listItemId: user,
     listItem: user,
   }));
 
   const userListObj = {
-    arr: orgUsersArr,
+    arr: orgUsersNArr(),
     addToArray: addOrgUserHandler, //Add Item
     removeFromArray: removeOrgUserHandler, //Delete
     addToArrayVis: true,
